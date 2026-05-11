@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Caddie">
@@ -30,21 +30,27 @@
   --font-sans: 'DM Sans', system-ui, sans-serif;
   --radius: 12px;
   --radius-sm: 8px;
+  --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; background: var(--white); }
+html, body { height: 100%; overflow: hidden; background: var(--green); }
 body { font-family: var(--font-sans); color: var(--text-primary); }
-#app { position: fixed; inset: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--cream); }
-.screen { display: none; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#app { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--cream); }
+.screen { display: none; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; min-height: 0; }
 .screen.active { display: flex; flex-direction: column; }
+
+/* ── HEADERS ── */
 .app-header { background: var(--green); padding: calc(var(--safe-top) + 16px) 20px 20px; flex-shrink: 0; }
+.plain-header { background: var(--green); padding: calc(var(--safe-top) + 16px) 20px 24px; flex-shrink: 0; }
+.chat-header { background: var(--green); padding: calc(var(--safe-top) + 16px) 20px 16px; flex-shrink: 0; }
+
 .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .logo { display: flex; align-items: center; gap: 10px; }
 .logo-icon { width: 28px; height: 28px; }
-.logo-name { font-family: var(--font-serif); font-size: 36px; font-weight: 500; color: var(--gold); letter-spacing: 0.005em; }
-.icon-btn { width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 16px; }
+.logo-name { font-family: var(--font-serif); font-size: 36px; font-weight: 600; color: var(--gold); letter-spacing: 0.005em; }
+.icon-btn { width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 16px; flex-shrink: 0; }
+
 .header-kpi-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(201,168,76,0.65); margin-bottom: 2px; }
 .header-score { font-family: var(--font-serif); font-size: 52px; font-weight: 300; color: var(--white); line-height: 1; }
 .header-score sub { font-size: 13px; color: rgba(255,255,255,0.45); font-family: var(--font-sans); font-weight: 300; vertical-align: middle; margin-left: 6px; }
@@ -52,24 +58,32 @@ body { font-family: var(--font-sans); color: var(--text-primary); }
 .header-kpi { flex: 1; }
 .header-kpi-label2 { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(201,168,76,0.55); }
 .header-kpi-val { font-family: var(--font-serif); font-size: 22px; font-weight: 300; color: var(--white); }
+
+.plain-header-title { font-family: var(--font-serif); font-size: 32px; font-weight: 400; color: var(--gold); }
+
+/* ── BODY ── */
 .screen-body { flex: 1; padding: 16px; background: var(--cream); overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .sec-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); font-weight: 500; opacity: 0.6; margin-bottom: 10px; }
+
+/* ── CARDS ── */
 .card { background: var(--white); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px; margin-bottom: 12px; }
 .card-gold { border-left: 2px solid var(--gold); }
+
+/* ── SESSION CARDS ── */
 .session-card { background: var(--white); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px; margin-bottom: 8px; }
 .sc-top { display: flex; justify-content: space-between; align-items: flex-start; }
 .sc-tag { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-bottom: 4px; }
 .tag-ronda { background: #e8f3ec; color: #1a4d2e; }
 .tag-practica { background: #e8eef8; color: #1a3d6e; }
 .tag-clase { background: #fdf3e0; color: #7a5500; }
-.sc-place { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+.sc-place { font-size: 11px; color: var(--text-tertiary); margin-top: 1px; }
 .sc-score { font-family: var(--font-serif); font-size: 32px; font-weight: 300; color: var(--green); line-height: 1; }
 .sc-kpis { display: flex; gap: 16px; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--cream-dark); }
 .sc-kpi { font-size: 10px; color: var(--text-tertiary); }
 .sc-kpi strong { display: block; font-size: 14px; color: var(--text-primary); font-weight: 500; }
 .sc-note { font-size: 12px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4; }
-.plain-header { background: var(--green); padding: calc(var(--safe-top) + 16px) 20px 16px; flex-shrink: 0; }
-.plain-header-title { font-family: var(--font-serif); font-size: 24px; font-weight: 400; color: var(--white); }
+
+/* ── FORMS ── */
 .type-selector { display: flex; gap: 6px; margin-bottom: 16px; }
 .type-btn { flex: 1; padding: 9px 4px; border: 0.5px solid var(--cream-dark); border-radius: var(--radius-sm); background: var(--cream); font-size: 11px; font-family: var(--font-sans); color: var(--text-secondary); cursor: pointer; text-align: center; }
 .type-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
@@ -82,23 +96,30 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 .btn-primary { width: 100%; padding: 14px; background: var(--green); color: var(--white); border: none; border-radius: var(--radius); font-family: var(--font-sans); font-size: 15px; font-weight: 500; cursor: pointer; }
 .btn-primary:active { opacity: 0.85; }
 .btn-ghost { padding: 10px 16px; background: transparent; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+
+/* ── HISTORY ── */
 .filter-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; }
 .filter-row::-webkit-scrollbar { display: none; }
 .filter-btn { flex-shrink: 0; font-size: 11px; padding: 5px 12px; border: 0.5px solid var(--border); border-radius: 20px; background: var(--white); color: var(--text-secondary); cursor: pointer; font-family: var(--font-sans); }
 .filter-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
+
+/* ── PROGRESS / FOCUS ── */
 .concept-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 0.5px solid var(--cream-dark); font-size: 13px; color: var(--text-primary); line-height: 1.4; }
 .concept-item:last-child { border-bottom: none; }
 .concept-dot { width: 5px; height: 5px; background: var(--gold); border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
 .progress-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
 .progress-summary strong { color: var(--green); font-weight: 500; display: block; margin-top: 8px; }
 .progress-summary strong:first-child { margin-top: 0; }
+
+/* ── CHART ── */
 .chart-wrap { position: relative; height: 160px; width: 100%; }
+
+/* ── CHAT ── */
 #screen-coach.active { display: flex; flex-direction: column; }
-.chat-header { background: var(--green); padding: calc(var(--safe-top) + 16px) 20px 16px; flex-shrink: 0; }
 .chat-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .chat-header-title { font-family: var(--font-serif); font-size: 22px; color: var(--white); font-weight: 400; }
 .chat-header-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
-.chat-messages { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: var(--cream); }
+.chat-messages { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: var(--cream); min-height: 0; }
 .msg { max-width: 82%; }
 .msg.user { align-self: flex-end; }
 .msg.assistant { align-self: flex-start; }
@@ -120,26 +141,34 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 .dot-loader span:nth-child(2) { animation-delay: 0.2s; }
 .dot-loader span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes dl { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+
+/* ── BOTTOM NAV ── */
 .bottom-nav { display: flex; background: var(--white); border-top: 0.5px solid var(--border); padding-bottom: var(--safe-bottom); flex-shrink: 0; z-index: 10; }
-.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 0 8px; cursor: pointer; border: none; background: none; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 14px 0 12px; cursor: pointer; border: none; background: none; }
 .nav-icon { font-size: 20px; color: var(--cream-dark); transition: color 0.2s; }
 .nav-label { font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cream-dark); margin-top: 2px; }
-.nav-dot { width: 3px; height: 3px; background: var(--gold); border-radius: 50%; margin-top: 2px; opacity: 0; }
+.nav-dot { width: 3px; height: 3px; background: var(--gold); border-radius: 50%; margin-top: 3px; opacity: 0; }
 .nav-item.active .nav-icon { color: var(--green); }
 .nav-item.active .nav-label { color: var(--green); }
 .nav-item.active .nav-dot { opacity: 1; }
+
+/* ── SETTINGS MODAL ── */
 .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 0.5px solid var(--cream-dark); }
 .settings-row:last-child { border-bottom: none; }
 .settings-label { font-size: 14px; color: var(--text-primary); }
-.settings-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+.settings-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 1px; }
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
 .modal-overlay.show { opacity: 1; pointer-events: all; }
 .modal-sheet { background: var(--white); border-radius: 20px 20px 0 0; padding: 20px 20px calc(20px + var(--safe-bottom)); width: 100%; transform: translateY(100%); transition: transform 0.3s ease; max-height: 85vh; overflow-y: auto; }
 .modal-overlay.show .modal-sheet { transform: translateY(0); }
 .modal-handle { width: 36px; height: 4px; background: var(--cream-dark); border-radius: 2px; margin: 0 auto 16px; }
 .modal-title { font-family: var(--font-serif); font-size: 20px; font-weight: 400; color: var(--green); margin-bottom: 16px; }
+
+/* ── TOAST ── */
 .toast { position: fixed; bottom: calc(72px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--green); color: var(--white); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100; white-space: nowrap; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── EMPTY ── */
 .empty { text-align: center; padding: 48px 20px; }
 .empty-icon { font-size: 36px; color: var(--cream-dark); margin-bottom: 12px; }
 .empty-text { font-size: 14px; color: var(--text-tertiary); line-height: 1.5; }
@@ -179,20 +208,17 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
         <div class="chart-wrap"><canvas id="scoreChart" role="img" aria-label="Evolución del score">Historial de scores.</canvas></div>
         <div id="no-chart-msg" style="text-align:center;padding:24px 0;font-size:13px;color:var(--text-tertiary);">Registrá al menos 2 rondas para ver el gráfico.</div>
       </div>
-
       <div class="sec-label">Progreso actual</div>
       <div class="card card-gold" id="progress-card">
-        <div style="font-size:13px;color:var(--text-tertiary);">El resumen de progreso aparece después de registrar tus primeras sesiones.</div>
+        <div style="font-size:13px;color:var(--text-tertiary);">El resumen aparece después de registrar al menos 2 sesiones.</div>
       </div>
-
       <div class="sec-label">Conceptos en foco</div>
       <div class="card card-gold" id="focus-card">
         <div style="font-size:13px;color:var(--text-tertiary);">Registrá tu primera clase para ver los conceptos en foco.</div>
       </div>
-
       <div class="sec-label">Última sesión</div>
       <div id="last-session-wrap">
-        <div class="card"><div style="font-size:13px;color:var(--text-tertiary);">Todavía no hay sesiones. ¡Registrá tu primera!</div></div>
+        <div class="card"><div style="font-size:13px;color:var(--text-tertiary);">Todavía no hay sesiones. Registrá tu primera.</div></div>
       </div>
     </div>
   </div>
@@ -274,7 +300,7 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
           </svg>
           <span class="logo-name">Caddie.</span>
         </div>
-        <button class="icon-btn" onclick="resetChat()" aria-label="Nueva consulta" title="Nueva consulta"><i class="ti ti-refresh"></i></button>
+        <button class="icon-btn" onclick="resetChat()" aria-label="Nueva consulta"><i class="ti ti-refresh"></i></button>
       </div>
       <div class="chat-header-title">Tu coach personal</div>
       <div class="chat-header-sub">Técnica · Juego mental · Estrategia</div>
@@ -467,7 +493,6 @@ function buildProgressPrompt() {
   const rondas = sessions.filter(s => s.type === 'ronda' && s.score).slice(0, 15);
   const clases = sessions.filter(s => s.type === 'clase').slice(0, 8);
   const practicas = sessions.filter(s => s.type === 'practica').slice(0, 8);
-
   let data = '';
   if (rondas.length > 0) {
     data += 'RONDAS:\n';
@@ -498,20 +523,18 @@ function buildProgressPrompt() {
       data += '\n';
     });
   }
-  if (focusConcepts) data += `\nCONCEPTOS EN FOCO ACTUALES:\n${focusConcepts}\n`;
+  if (focusConcepts) data += `\nCONCEPTOS EN FOCO:\n${focusConcepts}\n`;
+  return `Analizá los datos de este golfista (volvió al golf después de 3-5 años, nivel medio handicap 10-20). Generá un resumen en español rioplatense, directo y específico, con este formato exacto:
 
-  return `Analizá los datos de progreso de este golfista (volvió al golf después de 3-5 años, nivel medio handicap 10-20). Generá un resumen estructurado en español rioplatense, directo y específico, usando exactamente este formato:
-
-**Tendencia de score:** [análisis con números concretos, si mejora/empeora/estable]
-**Fortalezas:** [qué está funcionando según datos y notas]
-**Áreas a mejorar:** [patrones negativos, qué necesita trabajo]
-**Práctica reciente:** [qué trabajó, consistencia con conceptos de clase]
+**Tendencia de score:** [con números concretos]
+**Fortalezas:** [qué está funcionando]
+**Áreas a mejorar:** [patrones negativos]
+**Práctica reciente:** [qué trabajó, consistencia con clases]
 **Foco esta semana:** [1-2 cosas concretas y accionables]
 
-Sé específico con los datos reales. Máximo 160 palabras.
+Máximo 160 palabras. Solo datos reales, sin generalidades.
 
-DATOS:
-${data}`;
+DATOS:\n${data}`;
 }
 
 async function generateProgressSummary() {
@@ -540,31 +563,26 @@ async function forceRegenerateProgress() {
 function updateHome() {
   const rondas = sessions.filter(s => s.type === 'ronda' && s.score);
   const last5 = rondas.slice(0, 5);
-
   if (last5.length > 0) {
     const avg = (last5.reduce((a, s) => a + s.score, 0) / last5.length).toFixed(1);
     document.getElementById('h-score').innerHTML = `${avg} <sub>promedio últimas ${last5.length}</sub>`;
     const firD = last5.filter(s => s.fir !== null);
-    document.getElementById('h-fir').textContent = firD.length ? Math.round(firD.reduce((a,s) => a+(s.fir/14)*100,0)/firD.length)+'%' : '—';
+    document.getElementById('h-fir').textContent = firD.length ? Math.round(firD.reduce((a,s)=>a+(s.fir/14)*100,0)/firD.length)+'%' : '—';
     const girD = last5.filter(s => s.gir !== null);
-    document.getElementById('h-gir').textContent = girD.length ? Math.round(girD.reduce((a,s) => a+(s.gir/18)*100,0)/girD.length)+'%' : '—';
+    document.getElementById('h-gir').textContent = girD.length ? Math.round(girD.reduce((a,s)=>a+(s.gir/18)*100,0)/girD.length)+'%' : '—';
     const pD = last5.filter(s => s.putts !== null);
     document.getElementById('h-putts').textContent = pD.length ? (pD.reduce((a,s)=>a+s.putts,0)/pD.length).toFixed(1) : '—';
   } else {
     document.getElementById('h-score').innerHTML = `— <sub>sin rondas aún</sub>`;
     ['h-fir','h-gir','h-putts'].forEach(id => document.getElementById(id).textContent = '—');
   }
-
   const progressEl = document.getElementById('progress-card');
   if (progressSummary) {
-    const formatted = progressSummary
-      .replace(/\*\*(.+?):\*\*/g, '<strong>$1:</strong>')
-      .replace(/\n/g, '<br>');
+    const formatted = progressSummary.replace(/\*\*(.+?):\*\*/g, '<strong>$1:</strong>').replace(/\n/g, '<br>');
     progressEl.innerHTML = `<div class="progress-summary">${formatted}</div>`;
   } else {
     progressEl.innerHTML = `<div style="font-size:13px;color:var(--text-tertiary);">El resumen aparece después de registrar al menos 2 sesiones.</div>`;
   }
-
   const focusEl = document.getElementById('focus-card');
   if (focusConcepts) {
     const lines = focusConcepts.split('\n').filter(l => l.trim());
@@ -572,11 +590,9 @@ function updateHome() {
   } else {
     focusEl.innerHTML = '<div style="font-size:13px;color:var(--text-tertiary);">Registrá tu primera clase para ver los conceptos en foco.</div>';
   }
-
   document.getElementById('last-session-wrap').innerHTML = sessions.length > 0
     ? renderSessionCard(sessions[0])
     : '<div class="card"><div style="font-size:13px;color:var(--text-tertiary);">Todavía no hay sesiones. Registrá tu primera.</div></div>';
-
   renderChart(rondas.slice(0, 10).reverse());
 }
 
@@ -590,10 +606,7 @@ function renderChart(rondas) {
   const minS = Math.min(...scores), maxS = Math.max(...scores);
   scoreChartInstance = new Chart(canvas, {
     type: 'line',
-    data: {
-      labels: rondas.map(s => fmtShort(s.date)),
-      datasets: [{ data: scores, borderColor: '#1a4d2e', backgroundColor: 'rgba(26,77,46,0.06)', tension: 0.35, pointRadius: 4, pointBackgroundColor: scores.map(s => s === minS ? '#c9a84c' : '#1a4d2e'), pointBorderColor: 'transparent', fill: true, borderWidth: 1.5 }]
-    },
+    data: { labels: rondas.map(s => fmtShort(s.date)), datasets: [{ data: scores, borderColor: '#1a4d2e', backgroundColor: 'rgba(26,77,46,0.06)', tension: 0.35, pointRadius: 4, pointBackgroundColor: scores.map(s => s === minS ? '#c9a84c' : '#1a4d2e'), pointBorderColor: 'transparent', fill: true, borderWidth: 1.5 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { display: false }, border: { display: false } }, y: { min: minS-3, max: maxS+3, ticks: { color: '#aaa', font: { size: 10 }, stepSize: 3 }, grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false } } } }
   });
 }
@@ -622,16 +635,14 @@ function updateHistory() {
   const el = document.getElementById('history-list');
   const filtered = currentFilter === 'all' ? sessions : sessions.filter(s => s.type === currentFilter);
   el.innerHTML = filtered.length === 0
-    ? `<div class="empty"><div class="empty-icon"><i class="ti ti-golf"></i></div><div class="empty-text">No hay sesiones aquí todavía.</div></div>`
+    ? `<div class="empty"><div class="empty-icon"><i class="ti ti-flag"></i></div><div class="empty-text">No hay sesiones aquí todavía.</div></div>`
     : filtered.map(s => renderSessionCard(s)).join('');
 }
 
 function buildSystemPrompt() {
   let p = `Sos Caddie, coach de golf personal. Experto en técnica, juego mental y estrategia.\n\n`;
   p += PLAYER_PROFILE + '\n\n';
-  if (progressSummary) {
-    p += `RESUMEN DE PROGRESO (análisis automático de todos los datos del jugador):\n${progressSummary}\n\n`;
-  }
+  if (progressSummary) p += `RESUMEN DE PROGRESO (análisis automático de todos los datos):\n${progressSummary}\n\n`;
   if (focusConcepts) p += `CONCEPTOS EN FOCO (última clase con instructor):\n${focusConcepts}\n\n`;
   const ultimasRondas = sessions.filter(s => s.type === 'ronda' && s.score).slice(0, 5);
   if (ultimasRondas.length > 0) {
