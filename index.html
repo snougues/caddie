@@ -33,7 +33,7 @@
   --safe-top: env(safe-area-inset-top, 0px);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; background: var(--green); }
+html, body { height: 100%; overflow: hidden; background: var(--cream); }
 body { font-family: var(--font-sans); color: var(--text-primary); }
 #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; background: var(--cream); }
 .screen { display: none; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -42,7 +42,7 @@ body { font-family: var(--font-sans); color: var(--text-primary); }
 .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .logo { display: flex; align-items: center; gap: 10px; }
 .logo-icon { width: 28px; height: 28px; }
-.logo-name { font-family: var(--font-serif); font-size: 30px; font-weight: 500; color: var(--gold); letter-spacing: 0.005em; }
+.logo-name { font-family: var(--font-serif); font-size: 36px; font-weight: 500; color: var(--gold); letter-spacing: 0.005em; }
 .icon-btn { width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 16px; }
 .header-kpi-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(201,168,76,0.65); margin-bottom: 2px; }
 .header-score { font-family: var(--font-serif); font-size: 52px; font-weight: 300; color: var(--white); line-height: 1; }
@@ -120,7 +120,7 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 .dot-loader span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes dl { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
 .bottom-nav { display: flex; background: var(--white); border-top: 0.5px solid var(--border); padding-bottom: var(--safe-bottom); flex-shrink: 0; z-index: 10; }
-.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 45px 0 42px; cursor: pointer; border: none; background: none; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 14px 0 12px; cursor: pointer; border: none; background: none; }
 .nav-icon { font-size: 20px; color: var(--cream-dark); transition: color 0.2s; }
 .nav-label { font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cream-dark); margin-top: 2px; }
 .nav-dot { width: 3px; height: 3px; background: var(--gold); border-radius: 50%; margin-top: 3px; opacity: 0; }
@@ -160,7 +160,7 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
             <line x1="3" y1="12" x2="7" y2="12" stroke="#c9a84c" stroke-width="1"/>
             <line x1="17" y1="12" x2="21" y2="12" stroke="#c9a84c" stroke-width="1"/>
           </svg>
-          <span class="logo-name">Caddie</span>
+          <span class="logo-name">Caddie.</span>
         </div>
         <button class="icon-btn" onclick="showSettings()" aria-label="Configuración"><i class="ti ti-settings"></i></button>
       </div>
@@ -271,7 +271,7 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
             <line x1="3" y1="12" x2="7" y2="12" stroke="#c9a84c" stroke-width="1"/>
             <line x1="17" y1="12" x2="21" y2="12" stroke="#c9a84c" stroke-width="1"/>
           </svg>
-          <span class="logo-name">Caddie</span>
+          <span class="logo-name">Caddie.</span>
         </div>
         <button class="icon-btn" onclick="resetChat()" aria-label="Nueva consulta" title="Nueva consulta"><i class="ti ti-refresh"></i></button>
       </div>
