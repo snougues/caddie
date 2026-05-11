@@ -7,7 +7,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Caddie">
 <meta name="theme-color" content="#1a4d2e">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%231a4d2e'/><circle cx='90' cy='90' r='36' stroke='%23c9a84c' stroke-width='3' fill='none'/><circle cx='90' cy='90' r='8' fill='%23c9a84c'/><line x1='90' y1='54' x2='90' y2='68' stroke='%23c9a84c' stroke-width='3'/><line x1='90' y1='112' x2='90' y2='126' stroke='%23c9a84c' stroke-width='3'/><line x1='54' y1='90' x2='68' y2='90' stroke='%23c9a84c' stroke-width='3'/><line x1='112' y1='90' x2='126' y2='90' stroke='%23c9a84c' stroke-width='3'/></svg>">
 <title>Caddie</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,13 +17,10 @@
 :root {
   --green: #1a4d2e;
   --green-light: #2a6b41;
-  --green-muted: rgba(26,77,46,0.08);
   --gold: #c9a84c;
-  --gold-muted: rgba(201,168,76,0.15);
   --cream: #f7f5f0;
   --cream-dark: #ede9e0;
   --white: #ffffff;
-  --black: #1a1a1a;
   --text-primary: #1a1a1a;
   --text-secondary: #666;
   --text-tertiary: #aaa;
@@ -35,50 +31,29 @@
   --radius-sm: 8px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; background: var(--cream); }
 body { font-family: var(--font-sans); color: var(--text-primary); }
-
-/* ── APP SHELL ── */
 #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
-
-/* ── SCREENS ── */
 .screen { display: none; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .screen.active { display: flex; flex-direction: column; }
-
-/* ── HEADER ── */
-.app-header {
-  background: var(--green);
-  padding: 52px 20px 20px;
-  flex-shrink: 0;
-}
+.app-header { background: var(--green); padding: 52px 20px 20px; flex-shrink: 0; }
 .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .logo { display: flex; align-items: center; gap: 8px; }
 .logo-icon { width: 24px; height: 24px; }
 .logo-name { font-family: var(--font-serif); font-size: 20px; font-weight: 600; color: var(--gold); letter-spacing: 0.06em; }
-.header-actions { display: flex; gap: 8px; }
 .icon-btn { width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 16px; }
-
 .header-kpi-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(201,168,76,0.65); margin-bottom: 2px; }
 .header-score { font-family: var(--font-serif); font-size: 52px; font-weight: 300; color: var(--white); line-height: 1; }
 .header-score sub { font-size: 13px; color: rgba(255,255,255,0.45); font-family: var(--font-sans); font-weight: 300; vertical-align: middle; margin-left: 6px; }
-.header-kpis { display: flex; gap: 0; margin-top: 18px; padding-top: 16px; border-top: 0.5px solid rgba(255,255,255,0.1); }
+.header-kpis { display: flex; margin-top: 18px; padding-top: 16px; border-top: 0.5px solid rgba(255,255,255,0.1); }
 .header-kpi { flex: 1; }
 .header-kpi-label2 { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(201,168,76,0.55); }
 .header-kpi-val { font-family: var(--font-serif); font-size: 22px; font-weight: 300; color: var(--white); }
-
-/* ── BODY ── */
 .screen-body { flex: 1; padding: 16px; background: var(--cream); overflow-y: auto; -webkit-overflow-scrolling: touch; }
-
-/* ── SECTION LABEL ── */
 .sec-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); font-weight: 500; opacity: 0.6; margin-bottom: 10px; }
-
-/* ── CARDS ── */
 .card { background: var(--white); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px; margin-bottom: 12px; }
 .card-gold { border-left: 2px solid var(--gold); }
-
-/* ── SESSION CARDS ── */
 .session-card { background: var(--white); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px; margin-bottom: 8px; }
 .sc-top { display: flex; justify-content: space-between; align-items: flex-start; }
 .sc-tag { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-bottom: 4px; }
@@ -91,147 +66,87 @@ body { font-family: var(--font-sans); color: var(--text-primary); }
 .sc-kpi { font-size: 10px; color: var(--text-tertiary); }
 .sc-kpi strong { display: block; font-size: 14px; color: var(--text-primary); font-weight: 500; }
 .sc-note { font-size: 12px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4; }
-
-/* ── METRIC GRID ── */
-.metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-.metric { background: var(--white); border-radius: var(--radius-sm); border: 0.5px solid var(--border); padding: 12px; }
-.metric-label { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 4px; }
-.metric-val { font-family: var(--font-serif); font-size: 28px; font-weight: 300; color: var(--green); }
-.metric-sub { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
-
-/* ── BAR CHART ── */
-.bar-rows { display: flex; flex-direction: column; gap: 7px; }
-.bar-row { display: flex; align-items: center; gap: 8px; }
-.bar-label { font-size: 10px; color: var(--text-tertiary); width: 28px; text-align: right; flex-shrink: 0; }
-.bar-track { flex: 1; background: var(--cream-dark); border-radius: 2px; height: 5px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width 0.6s ease; }
-.bar-fill.best { background: var(--gold); }
-.bar-val { font-size: 11px; color: var(--text-secondary); width: 24px; font-weight: 500; }
-
-/* ── FOCUS CONCEPTS ── */
-.concept-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid var(--cream-dark); font-size: 13px; color: var(--text-primary); }
-.concept-item:last-child { border-bottom: none; }
-.concept-dot { width: 5px; height: 5px; background: var(--gold); border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
-
-/* ── FORMS ── */
-.form-group { margin-bottom: 14px; }
-.form-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green); font-weight: 500; opacity: 0.7; margin-bottom: 6px; display: block; }
-input, select, textarea {
-  width: 100%;
-  font-family: var(--font-sans);
-  font-size: 15px;
-  color: var(--text-primary);
-  background: var(--cream);
-  border: 0.5px solid var(--cream-dark);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-}
-input:focus, select:focus, textarea:focus { border-color: var(--green); background: var(--white); }
-textarea { resize: none; min-height: 80px; line-height: 1.5; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-/* ── TYPE SELECTOR ── */
+.plain-header { background: var(--green); padding: 52px 20px 16px; flex-shrink: 0; }
+.plain-header-title { font-family: var(--font-serif); font-size: 24px; font-weight: 400; color: var(--white); }
 .type-selector { display: flex; gap: 6px; margin-bottom: 16px; }
 .type-btn { flex: 1; padding: 9px 4px; border: 0.5px solid var(--cream-dark); border-radius: var(--radius-sm); background: var(--cream); font-size: 11px; font-family: var(--font-sans); color: var(--text-secondary); cursor: pointer; text-align: center; }
 .type-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
-
-/* ── BTN ── */
-.btn-primary { width: 100%; padding: 14px; background: var(--green); color: var(--white); border: none; border-radius: var(--radius); font-family: var(--font-sans); font-size: 15px; font-weight: 500; cursor: pointer; letter-spacing: 0.02em; }
-.btn-primary:active { background: var(--green-light); transform: scale(0.99); }
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green); font-weight: 500; opacity: 0.7; margin-bottom: 6px; display: block; }
+input, select, textarea { width: 100%; font-family: var(--font-sans); font-size: 15px; color: var(--text-primary); background: var(--cream); border: 0.5px solid var(--cream-dark); border-radius: var(--radius-sm); padding: 10px 12px; outline: none; -webkit-appearance: none; appearance: none; }
+input:focus, select:focus, textarea:focus { border-color: var(--green); background: var(--white); }
+textarea { resize: none; min-height: 80px; line-height: 1.5; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-primary { width: 100%; padding: 14px; background: var(--green); color: var(--white); border: none; border-radius: var(--radius); font-family: var(--font-sans); font-size: 15px; font-weight: 500; cursor: pointer; }
+.btn-primary:active { opacity: 0.85; }
 .btn-ghost { padding: 10px 16px; background: transparent; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 13px; color: var(--text-secondary); cursor: pointer; }
-
-/* ── CHAT ── */
-#screen-coach { display: none; }
+.filter-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; }
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-btn { flex-shrink: 0; font-size: 11px; padding: 5px 12px; border: 0.5px solid var(--border); border-radius: 20px; background: var(--white); color: var(--text-secondary); cursor: pointer; font-family: var(--font-sans); }
+.filter-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
+.concept-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 0.5px solid var(--cream-dark); font-size: 13px; color: var(--text-primary); line-height: 1.4; }
+.concept-item:last-child { border-bottom: none; }
+.concept-dot { width: 5px; height: 5px; background: var(--gold); border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.progress-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+.progress-summary strong { color: var(--green); font-weight: 500; display: block; margin-top: 8px; }
+.progress-summary strong:first-child { margin-top: 0; }
+.chart-wrap { position: relative; height: 160px; width: 100%; }
 #screen-coach.active { display: flex; flex-direction: column; }
 .chat-header { background: var(--green); padding: 52px 20px 16px; flex-shrink: 0; }
+.chat-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .chat-header-title { font-family: var(--font-serif); font-size: 22px; color: var(--white); font-weight: 400; }
 .chat-header-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
 .chat-messages { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: var(--cream); }
 .msg { max-width: 82%; }
 .msg.user { align-self: flex-end; }
 .msg.assistant { align-self: flex-start; }
-.msg-bubble { padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.55; }
+.msg-bubble { padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.6; }
 .msg.user .msg-bubble { background: var(--green); color: var(--white); border-bottom-right-radius: 4px; }
 .msg.assistant .msg-bubble { background: var(--white); color: var(--text-primary); border: 0.5px solid var(--border); border-bottom-left-radius: 4px; }
 .msg-time { font-size: 10px; color: var(--text-tertiary); margin-top: 3px; padding: 0 2px; }
 .msg.user .msg-time { text-align: right; }
-.quick-chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px 16px 0; background: var(--cream); -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.quick-chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px 16px 0; background: var(--cream); -webkit-overflow-scrolling: touch; scrollbar-width: none; flex-shrink: 0; }
 .quick-chips::-webkit-scrollbar { display: none; }
-.chip { flex-shrink: 0; font-size: 12px; padding: 6px 12px; border: 0.5px solid var(--green); border-radius: 20px; background: transparent; color: var(--green); cursor: pointer; font-family: var(--font-sans); white-space: nowrap; }
-.chip:active { background: var(--green-muted); }
+.chip { flex-shrink: 0; font-size: 12px; padding: 6px 12px; border: 0.5px solid var(--green); border-radius: 20px; background: transparent; color: var(--green); cursor: pointer; font-family: var(--font-sans); }
 .chat-input-area { padding: 10px 12px calc(10px + var(--safe-bottom)); background: var(--white); border-top: 0.5px solid var(--border); flex-shrink: 0; }
 .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
 .chat-input-row textarea { flex: 1; min-height: 40px; max-height: 100px; padding: 9px 12px; font-size: 14px; line-height: 1.4; border-radius: 20px; }
 .send-btn { width: 40px; height: 40px; background: var(--green); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; color: var(--white); font-size: 16px; }
 .send-btn:disabled { background: var(--cream-dark); color: var(--text-tertiary); }
-.dot-loader { display: flex; gap: 4px; align-items: center; padding: 2px 0; }
+.dot-loader { display: flex; gap: 4px; align-items: center; }
 .dot-loader span { width: 5px; height: 5px; background: var(--text-tertiary); border-radius: 50%; animation: dl 1.2s ease-in-out infinite; }
 .dot-loader span:nth-child(2) { animation-delay: 0.2s; }
 .dot-loader span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes dl { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
-
-/* ── BOTTOM NAV ── */
-.bottom-nav {
-  display: flex;
-  background: var(--white);
-  border-top: 0.5px solid var(--border);
-  padding-bottom: var(--safe-bottom);
-  flex-shrink: 0;
-  z-index: 10;
-}
+.bottom-nav { display: flex; background: var(--white); border-top: 0.5px solid var(--border); padding-bottom: var(--safe-bottom); flex-shrink: 0; z-index: 10; }
 .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 0 8px; cursor: pointer; border: none; background: none; }
 .nav-icon { font-size: 20px; color: var(--cream-dark); transition: color 0.2s; }
-.nav-label { font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cream-dark); margin-top: 2px; transition: color 0.2s; }
-.nav-dot { width: 3px; height: 3px; background: var(--gold); border-radius: 50%; margin-top: 3px; opacity: 0; transition: opacity 0.2s; }
+.nav-label { font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cream-dark); margin-top: 2px; }
+.nav-dot { width: 3px; height: 3px; background: var(--gold); border-radius: 50%; margin-top: 3px; opacity: 0; }
 .nav-item.active .nav-icon { color: var(--green); }
 .nav-item.active .nav-label { color: var(--green); }
 .nav-item.active .nav-dot { opacity: 1; }
-
-/* ── HISTORY FILTER ── */
-.filter-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; }
-.filter-row::-webkit-scrollbar { display: none; }
-.filter-btn { flex-shrink: 0; font-size: 11px; padding: 5px 12px; border: 0.5px solid var(--border); border-radius: 20px; background: var(--white); color: var(--text-secondary); cursor: pointer; font-family: var(--font-sans); }
-.filter-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
-
-/* ── SETTINGS ── */
 .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 0.5px solid var(--cream-dark); }
 .settings-row:last-child { border-bottom: none; }
 .settings-label { font-size: 14px; color: var(--text-primary); }
 .settings-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 1px; }
-.api-input { font-size: 13px; font-family: var(--font-mono, monospace); letter-spacing: 0.04em; }
-
-/* ── EMPTY STATE ── */
-.empty { text-align: center; padding: 48px 20px; }
-.empty-icon { font-size: 36px; color: var(--cream-dark); margin-bottom: 12px; }
-.empty-text { font-size: 14px; color: var(--text-tertiary); line-height: 1.5; }
-
-/* ── TOAST ── */
-.toast { position: fixed; bottom: calc(72px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--green); color: var(--white); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all 0.3s ease; pointer-events: none; z-index: 100; white-space: nowrap; }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* ── MODAL ── */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
 .modal-overlay.show { opacity: 1; pointer-events: all; }
-.modal-sheet { background: var(--white); border-radius: 20px 20px 0 0; padding: 20px 20px calc(20px + var(--safe-bottom)); width: 100%; transform: translateY(100%); transition: transform 0.3s ease; max-height: 80vh; overflow-y: auto; }
+.modal-sheet { background: var(--white); border-radius: 20px 20px 0 0; padding: 20px 20px calc(20px + var(--safe-bottom)); width: 100%; transform: translateY(100%); transition: transform 0.3s ease; max-height: 85vh; overflow-y: auto; }
 .modal-overlay.show .modal-sheet { transform: translateY(0); }
 .modal-handle { width: 36px; height: 4px; background: var(--cream-dark); border-radius: 2px; margin: 0 auto 16px; }
 .modal-title { font-family: var(--font-serif); font-size: 20px; font-weight: 400; color: var(--green); margin-bottom: 16px; }
-
-/* ── CHART ── */
-.chart-wrap { position: relative; height: 160px; width: 100%; }
-
-/* ── SCREEN HEADER (non-home) ── */
-.plain-header { background: var(--green); padding: 52px 20px 16px; flex-shrink: 0; }
-.plain-header-title { font-family: var(--font-serif); font-size: 24px; font-weight: 400; color: var(--white); }
+.toast { position: fixed; bottom: calc(72px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--green); color: var(--white); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.empty { text-align: center; padding: 48px 20px; }
+.empty-icon { font-size: 36px; color: var(--cream-dark); margin-bottom: 12px; }
+.empty-text { font-size: 14px; color: var(--text-tertiary); line-height: 1.5; }
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- ══ SCREEN: HOME ══ -->
+  <!-- HOME -->
   <div class="screen active" id="screen-home">
     <div class="app-header">
       <div class="header-top">
@@ -256,12 +171,16 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
         <div class="header-kpi"><div class="header-kpi-label2">Putts</div><div class="header-kpi-val" id="h-putts">—</div></div>
       </div>
     </div>
-
     <div class="screen-body">
       <div class="sec-label">Evolución de score</div>
-      <div class="card" style="margin-bottom:12px;">
-        <div class="chart-wrap"><canvas id="scoreChart" role="img" aria-label="Evolución del score por ronda">Historial de scores.</canvas></div>
+      <div class="card">
+        <div class="chart-wrap"><canvas id="scoreChart" role="img" aria-label="Evolución del score">Historial de scores.</canvas></div>
         <div id="no-chart-msg" style="text-align:center;padding:24px 0;font-size:13px;color:var(--text-tertiary);">Registrá al menos 2 rondas para ver el gráfico.</div>
+      </div>
+
+      <div class="sec-label">Progreso actual</div>
+      <div class="card card-gold" id="progress-card">
+        <div style="font-size:13px;color:var(--text-tertiary);">El resumen de progreso aparece después de registrar tus primeras sesiones.</div>
       </div>
 
       <div class="sec-label">Conceptos en foco</div>
@@ -276,43 +195,38 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
     </div>
   </div>
 
-  <!-- ══ SCREEN: REGISTRAR ══ -->
+  <!-- REGISTRAR -->
   <div class="screen" id="screen-log">
     <div class="plain-header"><div class="plain-header-title">Registrar sesión</div></div>
     <div class="screen-body">
       <div class="type-selector">
-        <button class="type-btn active" onclick="setType('ronda',this)">⛳ Ronda</button>
-        <button class="type-btn" onclick="setType('practica',this)">🏌️ Práctica</button>
-        <button class="type-btn" onclick="setType('clase',this)">📋 Clase</button>
+        <button class="type-btn active" onclick="setType('ronda',this)">Ronda</button>
+        <button class="type-btn" onclick="setType('practica',this)">Práctica</button>
+        <button class="type-btn" onclick="setType('clase',this)">Clase</button>
       </div>
-
       <div class="form-row" style="margin-bottom:14px;">
         <div class="form-group" style="margin:0;"><label class="form-label">Fecha</label><input type="date" id="f-date"></div>
         <div class="form-group" style="margin:0;"><label class="form-label">Lugar</label><input type="text" id="f-place" placeholder="Club / cancha"></div>
       </div>
-
       <div id="fields-ronda">
         <div class="form-row">
-          <div class="form-group"><label class="form-label">Score</label><input type="number" id="f-score" placeholder="Ej: 95" min="50" max="150"></div>
-          <div class="form-group"><label class="form-label">Putts</label><input type="number" id="f-putts" placeholder="Ej: 34" min="10" max="60"></div>
+          <div class="form-group"><label class="form-label">Score</label><input type="number" id="f-score" placeholder="95" min="50" max="150"></div>
+          <div class="form-group"><label class="form-label">Putts</label><input type="number" id="f-putts" placeholder="34" min="10" max="60"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label class="form-label">Fairways hit (de 14)</label><input type="number" id="f-fir" placeholder="Ej: 7" min="0" max="14"></div>
-          <div class="form-group"><label class="form-label">GIR (de 18)</label><input type="number" id="f-gir" placeholder="Ej: 5" min="0" max="18"></div>
+          <div class="form-group"><label class="form-label">Fairways hit (de 14)</label><input type="number" id="f-fir" placeholder="7" min="0" max="14"></div>
+          <div class="form-group"><label class="form-label">GIR (de 18)</label><input type="number" id="f-gir" placeholder="5" min="0" max="18"></div>
         </div>
       </div>
-
       <div id="fields-other" style="display:none;">
-        <div class="form-group"><label class="form-label">Duración (min)</label><input type="number" id="f-dur" placeholder="Ej: 90" min="15" max="300"></div>
+        <div class="form-group"><label class="form-label">Foco principal</label><input type="text" id="f-foco" placeholder="Ej: tempo con hierros, putting de distancia"></div>
+        <div class="form-group"><label class="form-label">Duración (min)</label><input type="number" id="f-dur" placeholder="90" min="15" max="300"></div>
       </div>
-
       <div id="fields-clase" style="display:none;">
-        <div class="form-group"><label class="form-label">Nombre del instructor</label><input type="text" id="f-instructor" placeholder="Ej: Carlos"></div>
+        <div class="form-group"><label class="form-label">Instructor</label><input type="text" id="f-instructor" placeholder="Ej: Carlos"></div>
         <div class="form-group"><label class="form-label">Conceptos clave (quedan en foco)</label><textarea id="f-conceptos" placeholder="1. Grip neutro&#10;2. Tempo más lento&#10;3. Hombros alineados al target"></textarea></div>
       </div>
-
-      <div class="form-group"><label class="form-label">Notas / observaciones</label><textarea id="f-notes" placeholder="¿Qué funcionó? ¿Qué mejorar?"></textarea></div>
-
+      <div class="form-group"><label class="form-label">Notas / observaciones</label><textarea id="f-notes" placeholder="¿Qué funcionó? ¿Qué mejorar? ¿Qué sentiste?"></textarea></div>
       <div class="form-group">
         <label class="form-label">Estado mental</label>
         <select id="f-mental">
@@ -324,12 +238,12 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
           <option value="frustrado">Frustrado</option>
         </select>
       </div>
-
       <button class="btn-primary" onclick="saveSession()">Guardar sesión</button>
+      <div style="height:20px;"></div>
     </div>
   </div>
 
-  <!-- ══ SCREEN: HISTORIAL ══ -->
+  <!-- HISTORIAL -->
   <div class="screen" id="screen-history">
     <div class="plain-header"><div class="plain-header-title">Historial</div></div>
     <div class="screen-body">
@@ -343,33 +257,36 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
     </div>
   </div>
 
-  <!-- ══ SCREEN: COACH ══ -->
+  <!-- COACH -->
   <div class="screen" id="screen-coach">
     <div class="chat-header">
-      <div class="logo" style="margin-bottom:10px;">
-        <svg class="logo-icon" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" stroke="#c9a84c" stroke-width="1"/>
-          <circle cx="12" cy="12" r="2" fill="#c9a84c"/>
-          <line x1="12" y1="3" x2="12" y2="7" stroke="#c9a84c" stroke-width="1"/>
-          <line x1="12" y1="17" x2="12" y2="21" stroke="#c9a84c" stroke-width="1"/>
-          <line x1="3" y1="12" x2="7" y2="12" stroke="#c9a84c" stroke-width="1"/>
-          <line x1="17" y1="12" x2="21" y2="12" stroke="#c9a84c" stroke-width="1"/>
-        </svg>
-        <span class="logo-name">Caddie</span>
+      <div class="chat-header-row">
+        <div class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#c9a84c" stroke-width="1"/>
+            <circle cx="12" cy="12" r="2" fill="#c9a84c"/>
+            <line x1="12" y1="3" x2="12" y2="7" stroke="#c9a84c" stroke-width="1"/>
+            <line x1="12" y1="17" x2="12" y2="21" stroke="#c9a84c" stroke-width="1"/>
+            <line x1="3" y1="12" x2="7" y2="12" stroke="#c9a84c" stroke-width="1"/>
+            <line x1="17" y1="12" x2="21" y2="12" stroke="#c9a84c" stroke-width="1"/>
+          </svg>
+          <span class="logo-name">Caddie</span>
+        </div>
+        <button class="icon-btn" onclick="resetChat()" aria-label="Nueva consulta" title="Nueva consulta"><i class="ti ti-refresh"></i></button>
       </div>
       <div class="chat-header-title">Tu coach personal</div>
       <div class="chat-header-sub">Técnica · Juego mental · Estrategia</div>
     </div>
     <div class="quick-chips" id="quick-chips">
+      <button class="chip" onclick="sendQuick('Analizá mi progreso y decime en qué enfocarme esta semana')">Mi progreso</button>
+      <button class="chip" onclick="sendQuick('Dame un plan de práctica para esta semana basado en mis datos')">Plan de práctica</button>
       <button class="chip" onclick="sendQuick('¿Cómo mejoro mi juego mental antes de un putt difícil?')">Juego mental</button>
-      <button class="chip" onclick="sendQuick('Analizá mi progreso y decime en qué tengo que enfocarme')">Analizar progreso</button>
-      <button class="chip" onclick="sendQuick('Dame un plan de práctica para esta semana')">Plan de práctica</button>
       <button class="chip" onclick="sendQuick('¿Qué debería trabajar hoy en el driving range?')">Qué practicar hoy</button>
       <button class="chip" onclick="sendQuick('Cómo gestiono la presión cuando juego con amigos')">Presión social</button>
     </div>
     <div class="chat-messages" id="chat-messages">
       <div class="msg assistant">
-        <div class="msg-bubble">¡Hola! Soy tu caddie y coach personal. Conoco tu historial, tus stats y lo que estás trabajando con el instructor. ¿En qué arrancamos?</div>
+        <div class="msg-bubble">Hola! Soy tu caddie y coach personal. Conozco tu historial, tus KPIs y lo que estás trabajando con el instructor. ¿En qué arrancamos?</div>
         <div class="msg-time">Ahora</div>
       </div>
     </div>
@@ -381,99 +298,107 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
     </div>
   </div>
 
-  <!-- ══ BOTTOM NAV ══ -->
   <nav class="bottom-nav">
     <button class="nav-item active" onclick="navigate('home',this)" aria-label="Inicio">
-      <i class="ti ti-home nav-icon"></i>
-      <span class="nav-label">Inicio</span>
-      <div class="nav-dot"></div>
+      <i class="ti ti-home nav-icon"></i><span class="nav-label">Inicio</span><div class="nav-dot"></div>
     </button>
     <button class="nav-item" onclick="navigate('log',this)" aria-label="Registrar">
-      <i class="ti ti-plus nav-icon"></i>
-      <span class="nav-label">Registrar</span>
-      <div class="nav-dot"></div>
+      <i class="ti ti-plus nav-icon"></i><span class="nav-label">Registrar</span><div class="nav-dot"></div>
     </button>
     <button class="nav-item" onclick="navigate('history',this)" aria-label="Historial">
-      <i class="ti ti-chart-bar nav-icon"></i>
-      <span class="nav-label">Stats</span>
-      <div class="nav-dot"></div>
+      <i class="ti ti-chart-bar nav-icon"></i><span class="nav-label">Stats</span><div class="nav-dot"></div>
     </button>
     <button class="nav-item" onclick="navigate('coach',this)" aria-label="Coach">
-      <i class="ti ti-message-circle nav-icon"></i>
-      <span class="nav-label">Coach</span>
-      <div class="nav-dot"></div>
+      <i class="ti ti-message-circle nav-icon"></i><span class="nav-label">Coach</span><div class="nav-dot"></div>
     </button>
   </nav>
 </div>
 
-<!-- ══ SETTINGS MODAL ══ -->
+<!-- SETTINGS -->
 <div class="modal-overlay" id="settings-modal" onclick="closeSettings(event)">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title">Configuración</div>
-    <div class="card" style="margin-bottom:0;">
-      <div class="settings-row">
-        <div><div class="settings-label">API Key de Anthropic</div><div class="settings-sub">Necesaria para el chat con el coach</div></div>
+    <div class="card">
+      <div class="settings-row" style="padding-top:0;">
+        <div><div class="settings-label">API Key de Anthropic</div><div class="settings-sub">Para el coach y los resúmenes automáticos</div></div>
       </div>
       <div class="form-group" style="margin-bottom:8px;">
-        <input type="password" class="api-input" id="api-key-input" placeholder="sk-ant-...">
+        <input type="password" id="api-key-input" placeholder="sk-ant-..." style="font-family:monospace;font-size:13px;letter-spacing:0.04em;">
       </div>
       <div style="display:flex;gap:8px;">
         <button class="btn-primary" style="font-size:13px;padding:10px;" onclick="saveApiKey()">Guardar</button>
         <button class="btn-ghost" onclick="closeSettings()">Cancelar</button>
       </div>
-      <div style="margin-top:12px;font-size:11px;color:var(--text-tertiary);line-height:1.5;">
-        Obtené tu API key en <strong>console.anthropic.com</strong>. Se guarda solo en este dispositivo.
-      </div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text-tertiary);line-height:1.5;">Obtené tu key en <strong>console.anthropic.com</strong>. Se guarda solo en este dispositivo.</div>
     </div>
-
-    <div style="margin-top:16px;" class="card">
+    <div style="margin-top:12px;" class="card">
       <div class="settings-row" style="padding-top:0;">
+        <div><div class="settings-label">Regenerar resumen</div><div class="settings-sub">Actualiza el análisis de progreso</div></div>
+        <button class="btn-ghost" onclick="forceRegenerateProgress()">Regenerar</button>
+      </div>
+      <div class="settings-row">
         <div><div class="settings-label">Exportar datos</div><div class="settings-sub">Descarga tu historial en JSON</div></div>
         <button class="btn-ghost" onclick="exportData()">Exportar</button>
       </div>
       <div class="settings-row">
-        <div><div class="settings-label">Versión</div></div>
-        <div style="font-size:13px;color:var(--text-tertiary);">Caddie 1.0</div>
+        <div class="settings-label">Versión</div>
+        <div style="font-size:13px;color:var(--text-tertiary);">Caddie 1.1</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ TOAST ══ -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ── DB ──
 const DB_KEY = 'caddie_sessions_v1';
 const FOCUS_KEY = 'caddie_focus_v1';
 const API_KEY_STORE = 'caddie_apikey_v1';
+const PROGRESS_KEY = 'caddie_progress_v1';
 
 let sessions = [];
 let focusConcepts = '';
 let apiKey = '';
+let progressSummary = '';
 let currentFilter = 'all';
 let currentType = 'ronda';
 let chatHistory = [];
 let scoreChartInstance = null;
 
-function dbGet(key) {
-  try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
-}
-function dbSet(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { console.error(e); }
-}
+const PLAYER_PROFILE = `PERFIL DEL JUGADOR (siempre presente, no cambia):
+- Volvió al golf después de 3-5 años sin jugar
+- Nivel previo: handicap medio (10-20)
+- Juega una vez por semana con amigos
+- Toma clases con instructor local
+- Practica en driving range con frecuencia variable
+- Juega el 90% del tiempo en dos canchas del mismo club
+- Objetivos: bajar handicap, disfrutar más cada ronda, jugar mejor con amigos
+- Mayor desafío: constancia general en técnica, mental y toma de decisiones
+
+INSTRUCCIONES PARA EL COACH:
+- Hablá siempre en español rioplatense (usás "vos")
+- Respuestas CORTAS y DIRECTAS — bullet points cuando sea posible, sin vueltas
+- Conectá los consejos con los conceptos de la última clase cuando sea relevante
+- Ayudalo a estructurar prácticas concretas y con propósito claro
+- Desafialo a pensar — no le des todo masticado, hacele preguntas que lo hagan reflexionar
+- Cuando hable de una ronda o práctica, preguntá qué fue bien y qué no, no solo los números
+- Recordale los conceptos en foco cuando sea pertinente
+- Nunca des respuestas genéricas — siempre basate en su historial real y sus datos`;
+
+function dbGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function dbSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { console.error(e); } }
 
 function load() {
   sessions = dbGet(DB_KEY) || [];
   focusConcepts = localStorage.getItem(FOCUS_KEY) || '';
   apiKey = localStorage.getItem(API_KEY_STORE) || '';
+  progressSummary = localStorage.getItem(PROGRESS_KEY) || '';
   if (apiKey) document.getElementById('api-key-input').value = apiKey;
   updateHome();
   updateHistory();
 }
 
-// ── NAVIGATION ──
 function navigate(id, btn) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -483,7 +408,6 @@ function navigate(id, btn) {
   if (id === 'history') updateHistory();
 }
 
-// ── FORM ──
 function setType(type, btn) {
   currentType = type;
   document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
@@ -493,12 +417,11 @@ function setType(type, btn) {
   document.getElementById('fields-clase').style.display = type === 'clase' ? 'block' : 'none';
 }
 
-function saveSession() {
+async function saveSession() {
   const date = document.getElementById('f-date').value || new Date().toISOString().split('T')[0];
   const place = document.getElementById('f-place').value.trim();
   const notes = document.getElementById('f-notes').value.trim();
   const mental = document.getElementById('f-mental').value;
-
   const s = { id: Date.now(), type: currentType, date, place, notes, mental };
 
   if (currentType === 'ronda') {
@@ -509,35 +432,109 @@ function saveSession() {
     if (isNaN(s.fir)) s.fir = null;
     if (isNaN(s.gir)) s.gir = null;
   } else {
+    s.foco = document.getElementById('f-foco').value.trim();
     s.duracion = parseInt(document.getElementById('f-dur').value) || null;
   }
 
   if (currentType === 'clase') {
     s.instructor = document.getElementById('f-instructor').value.trim();
     const conceptos = document.getElementById('f-conceptos').value.trim();
-    if (conceptos) {
-      focusConcepts = conceptos;
-      localStorage.setItem(FOCUS_KEY, focusConcepts);
-    }
+    if (conceptos) { focusConcepts = conceptos; localStorage.setItem(FOCUS_KEY, focusConcepts); }
   }
 
   sessions.unshift(s);
   dbSet(DB_KEY, sessions);
   clearForm();
-  toast('Sesión guardada');
-  setTimeout(() => navigate('home', document.querySelector('.nav-item')), 300);
+  navigate('home', document.querySelector('.nav-item'));
+  updateHome();
+  toast('Sesión guardada — generando resumen...');
+  await generateProgressSummary();
+  updateHome();
+  toast('Resumen actualizado');
 }
 
 function clearForm() {
-  ['f-score','f-putts','f-fir','f-gir','f-notes','f-conceptos','f-dur','f-place','f-instructor'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
+  ['f-score','f-putts','f-fir','f-gir','f-notes','f-conceptos','f-dur','f-place','f-instructor','f-foco'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
   });
   document.getElementById('f-mental').value = '';
   document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
 }
 
-// ── HOME ──
+function buildProgressPrompt() {
+  const rondas = sessions.filter(s => s.type === 'ronda' && s.score).slice(0, 15);
+  const clases = sessions.filter(s => s.type === 'clase').slice(0, 8);
+  const practicas = sessions.filter(s => s.type === 'practica').slice(0, 8);
+
+  let data = '';
+  if (rondas.length > 0) {
+    data += 'RONDAS:\n';
+    rondas.forEach(s => {
+      data += `· ${s.date}: Score ${s.score}`;
+      if (s.fir !== null) data += `, FIR ${s.fir}/14`;
+      if (s.gir !== null) data += `, GIR ${s.gir}/18`;
+      if (s.putts) data += `, Putts ${s.putts}`;
+      if (s.mental) data += ` (${s.mental})`;
+      if (s.notes) data += ` | "${s.notes.slice(0,80)}"`;
+      data += '\n';
+    });
+  }
+  if (clases.length > 0) {
+    data += '\nCLASES:\n';
+    clases.forEach(s => {
+      data += `· ${s.date}${s.instructor ? ' con ' + s.instructor : ''}`;
+      if (s.notes) data += `: ${s.notes.slice(0,100)}`;
+      data += '\n';
+    });
+  }
+  if (practicas.length > 0) {
+    data += '\nPRÁCTICAS:\n';
+    practicas.forEach(s => {
+      data += `· ${s.date}`;
+      if (s.foco) data += ` | Foco: ${s.foco}`;
+      if (s.notes) data += ` | ${s.notes.slice(0,80)}`;
+      data += '\n';
+    });
+  }
+  if (focusConcepts) data += `\nCONCEPTOS EN FOCO ACTUALES:\n${focusConcepts}\n`;
+
+  return `Analizá los datos de progreso de este golfista (volvió al golf después de 3-5 años, nivel medio handicap 10-20). Generá un resumen estructurado en español rioplatense, directo y específico, usando exactamente este formato:
+
+**Tendencia de score:** [análisis con números concretos, si mejora/empeora/estable]
+**Fortalezas:** [qué está funcionando según datos y notas]
+**Áreas a mejorar:** [patrones negativos, qué necesita trabajo]
+**Práctica reciente:** [qué trabajó, consistencia con conceptos de clase]
+**Foco esta semana:** [1-2 cosas concretas y accionables]
+
+Sé específico con los datos reales. Máximo 160 palabras.
+
+DATOS:
+${data}`;
+}
+
+async function generateProgressSummary() {
+  if (!apiKey || sessions.length < 2) return;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 400, messages: [{ role: 'user', content: buildProgressPrompt() }] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const summary = data.content?.find(b => b.type === 'text')?.text || '';
+    if (summary) { progressSummary = summary; localStorage.setItem(PROGRESS_KEY, progressSummary); }
+  } catch(e) { console.error('Error generando resumen:', e); }
+}
+
+async function forceRegenerateProgress() {
+  closeSettings();
+  toast('Regenerando resumen...');
+  await generateProgressSummary();
+  updateHome();
+  toast('Resumen actualizado');
+}
+
 function updateHome() {
   const rondas = sessions.filter(s => s.type === 'ronda' && s.score);
   const last5 = rondas.slice(0, 5);
@@ -545,23 +542,27 @@ function updateHome() {
   if (last5.length > 0) {
     const avg = (last5.reduce((a, s) => a + s.score, 0) / last5.length).toFixed(1);
     document.getElementById('h-score').innerHTML = `${avg} <sub>promedio últimas ${last5.length}</sub>`;
-
     const firD = last5.filter(s => s.fir !== null);
-    document.getElementById('h-fir').textContent = firD.length ? Math.round(firD.reduce((a,s) => a + (s.fir/14)*100, 0)/firD.length) + '%' : '—';
-
+    document.getElementById('h-fir').textContent = firD.length ? Math.round(firD.reduce((a,s) => a+(s.fir/14)*100,0)/firD.length)+'%' : '—';
     const girD = last5.filter(s => s.gir !== null);
-    document.getElementById('h-gir').textContent = girD.length ? Math.round(girD.reduce((a,s) => a + (s.gir/18)*100, 0)/girD.length) + '%' : '—';
-
+    document.getElementById('h-gir').textContent = girD.length ? Math.round(girD.reduce((a,s) => a+(s.gir/18)*100,0)/girD.length)+'%' : '—';
     const pD = last5.filter(s => s.putts !== null);
-    document.getElementById('h-putts').textContent = pD.length ? (pD.reduce((a,s) => a + s.putts, 0)/pD.length).toFixed(1) : '—';
+    document.getElementById('h-putts').textContent = pD.length ? (pD.reduce((a,s)=>a+s.putts,0)/pD.length).toFixed(1) : '—';
   } else {
     document.getElementById('h-score').innerHTML = `— <sub>sin rondas aún</sub>`;
-    document.getElementById('h-fir').textContent = '—';
-    document.getElementById('h-gir').textContent = '—';
-    document.getElementById('h-putts').textContent = '—';
+    ['h-fir','h-gir','h-putts'].forEach(id => document.getElementById(id).textContent = '—');
   }
 
-  // Focus concepts
+  const progressEl = document.getElementById('progress-card');
+  if (progressSummary) {
+    const formatted = progressSummary
+      .replace(/\*\*(.+?):\*\*/g, '<strong>$1:</strong>')
+      .replace(/\n/g, '<br>');
+    progressEl.innerHTML = `<div class="progress-summary">${formatted}</div>`;
+  } else {
+    progressEl.innerHTML = `<div style="font-size:13px;color:var(--text-tertiary);">El resumen aparece después de registrar al menos 2 sesiones.</div>`;
+  }
+
   const focusEl = document.getElementById('focus-card');
   if (focusConcepts) {
     const lines = focusConcepts.split('\n').filter(l => l.trim());
@@ -570,15 +571,10 @@ function updateHome() {
     focusEl.innerHTML = '<div style="font-size:13px;color:var(--text-tertiary);">Registrá tu primera clase para ver los conceptos en foco.</div>';
   }
 
-  // Last session
-  const lastEl = document.getElementById('last-session-wrap');
-  if (sessions.length > 0) {
-    lastEl.innerHTML = renderSessionCard(sessions[0]);
-  } else {
-    lastEl.innerHTML = '<div class="card"><div style="font-size:13px;color:var(--text-tertiary);">Todavía no hay sesiones. ¡Registrá tu primera!</div></div>';
-  }
+  document.getElementById('last-session-wrap').innerHTML = sessions.length > 0
+    ? renderSessionCard(sessions[0])
+    : '<div class="card"><div style="font-size:13px;color:var(--text-tertiary);">Todavía no hay sesiones. Registrá tu primera.</div></div>';
 
-  // Chart
   renderChart(rondas.slice(0, 10).reverse());
 }
 
@@ -586,72 +582,33 @@ function renderChart(rondas) {
   const canvas = document.getElementById('scoreChart');
   const msg = document.getElementById('no-chart-msg');
   if (scoreChartInstance) { scoreChartInstance.destroy(); scoreChartInstance = null; }
-  if (rondas.length < 2) {
-    canvas.style.display = 'none';
-    msg.style.display = 'block';
-    return;
-  }
-  canvas.style.display = 'block';
-  msg.style.display = 'none';
+  if (rondas.length < 2) { canvas.style.display = 'none'; msg.style.display = 'block'; return; }
+  canvas.style.display = 'block'; msg.style.display = 'none';
   const scores = rondas.map(s => s.score);
-  const minScore = Math.min(...scores) - 3;
-  const maxScore = Math.max(...scores) + 3;
+  const minS = Math.min(...scores), maxS = Math.max(...scores);
   scoreChartInstance = new Chart(canvas, {
     type: 'line',
     data: {
       labels: rondas.map(s => fmtShort(s.date)),
-      datasets: [{
-        data: scores,
-        borderColor: '#1a4d2e',
-        backgroundColor: 'rgba(26,77,46,0.06)',
-        tension: 0.35,
-        pointRadius: 4,
-        pointBackgroundColor: scores.map((s, i) => s === Math.min(...scores) ? '#c9a84c' : '#1a4d2e'),
-        pointBorderColor: 'transparent',
-        fill: true,
-        borderWidth: 1.5
-      }]
+      datasets: [{ data: scores, borderColor: '#1a4d2e', backgroundColor: 'rgba(26,77,46,0.06)', tension: 0.35, pointRadius: 4, pointBackgroundColor: scores.map(s => s === minS ? '#c9a84c' : '#1a4d2e'), pointBorderColor: 'transparent', fill: true, borderWidth: 1.5 }]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => 'Score: ' + ctx.raw } } },
-      scales: {
-        x: { ticks: { color: '#aaa', font: { size: 10, family: 'DM Sans' } }, grid: { display: false }, border: { display: false } },
-        y: { min: minScore, max: maxScore, reverse: false, ticks: { color: '#aaa', font: { size: 10, family: 'DM Sans' }, stepSize: 3 }, grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false } }
-      }
-    }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { display: false }, border: { display: false } }, y: { min: minS-3, max: maxS+3, ticks: { color: '#aaa', font: { size: 10 }, stepSize: 3 }, grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false } } } }
   });
 }
 
-// ── SESSION CARD ──
 function renderSessionCard(s) {
   const typeLabel = { ronda: 'Ronda completa', practica: 'Práctica / range', clase: 'Clase con instructor' };
   const tagClass = { ronda: 'tag-ronda', practica: 'tag-practica', clase: 'tag-clase' };
   let kpis = '';
   if (s.type === 'ronda') {
-    kpis = `<div class="sc-kpis">
-      ${s.fir !== null ? `<div class="sc-kpi"><strong>${s.fir}/14</strong>FIR</div>` : ''}
-      ${s.gir !== null ? `<div class="sc-kpi"><strong>${s.gir}/18</strong>GIR</div>` : ''}
-      ${s.putts ? `<div class="sc-kpi"><strong>${s.putts}</strong>Putts</div>` : ''}
-    </div>`;
+    const parts = [s.fir!==null?`<div class="sc-kpi"><strong>${s.fir}/14</strong>FIR</div>`:'', s.gir!==null?`<div class="sc-kpi"><strong>${s.gir}/18</strong>GIR</div>`:'', s.putts?`<div class="sc-kpi"><strong>${s.putts}</strong>Putts</div>`:''].filter(Boolean);
+    if (parts.length) kpis = `<div class="sc-kpis">${parts.join('')}</div>`;
   }
-  const rightVal = s.score ? `<div class="sc-score">${s.score}</div>`
-    : s.duracion ? `<div style="font-size:12px;color:var(--text-tertiary);text-align:right;">${s.duracion} min</div>` : '';
-  return `<div class="session-card">
-    <div class="sc-top">
-      <div>
-        <span class="sc-tag ${tagClass[s.type]}">${typeLabel[s.type]}</span>
-        <div class="sc-place">${fmtDate(s.date)}${s.place ? ' · ' + s.place : ''}${s.mental ? ' · ' + s.mental : ''}</div>
-      </div>
-      ${rightVal}
-    </div>
-    ${kpis}
-    ${s.notes ? `<div class="sc-note">${s.notes.slice(0, 100)}${s.notes.length > 100 ? '…' : ''}</div>` : ''}
-  </div>`;
+  const right = s.score ? `<div class="sc-score">${s.score}</div>` : s.duracion ? `<div style="font-size:12px;color:var(--text-tertiary);">${s.duracion} min</div>` : '';
+  const foco = s.foco ? `<div style="font-size:11px;color:var(--gold);margin-top:3px;">Foco: ${s.foco}</div>` : '';
+  return `<div class="session-card"><div class="sc-top"><div><span class="sc-tag ${tagClass[s.type]}">${typeLabel[s.type]}</span><div class="sc-place">${fmtDate(s.date)}${s.place?' · '+s.place:''}${s.mental?' · '+s.mental:''}</div>${foco}</div>${right}</div>${kpis}${s.notes?`<div class="sc-note">${s.notes.slice(0,120)}${s.notes.length>120?'…':''}</div>`:''}</div>`;
 }
 
-// ── HISTORY ──
 function setFilter(f, btn) {
   currentFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -662,49 +619,45 @@ function setFilter(f, btn) {
 function updateHistory() {
   const el = document.getElementById('history-list');
   const filtered = currentFilter === 'all' ? sessions : sessions.filter(s => s.type === currentFilter);
-  if (filtered.length === 0) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon"><i class="ti ti-golf"></i></div><div class="empty-text">No hay sesiones aquí todavía.</div></div>`;
-    return;
-  }
-  el.innerHTML = filtered.map(s => renderSessionCard(s)).join('');
+  el.innerHTML = filtered.length === 0
+    ? `<div class="empty"><div class="empty-icon"><i class="ti ti-golf"></i></div><div class="empty-text">No hay sesiones aquí todavía.</div></div>`
+    : filtered.map(s => renderSessionCard(s)).join('');
 }
 
-// ── CHAT ──
 function buildSystemPrompt() {
-  const rondas = sessions.filter(s => s.type === 'ronda').slice(0, 10);
-  const clases = sessions.filter(s => s.type === 'clase').slice(0, 5);
-  const practicas = sessions.filter(s => s.type === 'practica').slice(0, 5);
-
-  let p = `Sos Caddie, un coach de golf experto, conciso y cálido. Hablás en español rioplatense (usás "vos"). Conocés la técnica del swing, el juego mental, la estrategia en cancha y cómo mejorar de forma inteligente. Tus respuestas son prácticas y accionables. Nunca genéricas.
-
-El jugador está volviendo al golf, toma clases con un instructor y juega una vez por semana con amigos. Su objetivo es mejorar de forma inteligente, reforzando lo que aprende en clases.\n\n`;
-
+  let p = `Sos Caddie, coach de golf personal. Experto en técnica, juego mental y estrategia.\n\n`;
+  p += PLAYER_PROFILE + '\n\n';
+  if (progressSummary) {
+    p += `RESUMEN DE PROGRESO (análisis automático de todos los datos del jugador):\n${progressSummary}\n\n`;
+  }
   if (focusConcepts) p += `CONCEPTOS EN FOCO (última clase con instructor):\n${focusConcepts}\n\n`;
-
-  if (rondas.length > 0) {
-    p += `ÚLTIMAS RONDAS:\n`;
-    rondas.forEach(s => {
+  const ultimasRondas = sessions.filter(s => s.type === 'ronda' && s.score).slice(0, 5);
+  if (ultimasRondas.length > 0) {
+    p += `ÚLTIMAS 5 RONDAS:\n`;
+    ultimasRondas.forEach(s => {
       p += `· ${s.date}: Score ${s.score}`;
       if (s.fir !== null) p += `, FIR ${s.fir}/14`;
       if (s.gir !== null) p += `, GIR ${s.gir}/18`;
       if (s.putts) p += `, Putts ${s.putts}`;
-      if (s.mental) p += ` (estado: ${s.mental})`;
-      if (s.notes) p += ` | "${s.notes.slice(0, 60)}"`;
+      if (s.mental) p += ` (${s.mental})`;
+      if (s.notes) p += ` | "${s.notes.slice(0,60)}"`;
       p += '\n';
     });
     p += '\n';
   }
-  if (clases.length > 0) {
-    p += `ÚLTIMAS CLASES:\n`;
-    clases.forEach(s => { p += `· ${s.date}${s.instructor ? ' con ' + s.instructor : ''}: ${(s.notes || '').slice(0, 80)}\n`; });
+  const ultimaClase = sessions.filter(s => s.type === 'clase')[0];
+  if (ultimaClase) {
+    p += `ÚLTIMA CLASE: ${ultimaClase.date}${ultimaClase.instructor?' con '+ultimaClase.instructor:''}\n`;
+    if (ultimaClase.notes) p += `Notas: ${ultimaClase.notes.slice(0,120)}\n\n`;
+  }
+  const ultimaPractica = sessions.filter(s => s.type === 'practica')[0];
+  if (ultimaPractica) {
+    p += `ÚLTIMA PRÁCTICA: ${ultimaPractica.date}`;
+    if (ultimaPractica.foco) p += ` | Foco: ${ultimaPractica.foco}`;
+    if (ultimaPractica.notes) p += ` | ${ultimaPractica.notes.slice(0,80)}`;
     p += '\n';
   }
-  if (practicas.length > 0) {
-    p += `SESIONES DE PRÁCTICA RECIENTES:\n`;
-    practicas.forEach(s => { p += `· ${s.date}: ${(s.notes || '').slice(0, 60)}\n`; });
-    p += '\n';
-  }
-  if (sessions.length === 0) p += `El jugador todavía no tiene sesiones registradas. Ayudalo a arrancar.\n`;
+  if (sessions.length === 0) p += `Sin sesiones todavía. Ayudalo a arrancar.\n`;
   return p;
 }
 
@@ -712,8 +665,7 @@ async function sendMessage() {
   const input = document.getElementById('chat-input');
   const msg = input.value.trim();
   if (!msg) return;
-  input.value = '';
-  input.style.height = 'auto';
+  input.value = ''; input.style.height = 'auto';
   appendMsg('user', msg);
   chatHistory.push({ role: 'user', content: msg });
   await fetchCoach();
@@ -725,49 +677,43 @@ function sendQuick(text) {
   document.getElementById('quick-chips').style.display = 'none';
 }
 
+function resetChat() {
+  chatHistory = [];
+  const wrap = document.getElementById('chat-messages');
+  wrap.innerHTML = `<div class="msg assistant"><div class="msg-bubble">Nueva consulta. ¿En qué arrancamos?</div><div class="msg-time">Ahora</div></div>`;
+  document.getElementById('quick-chips').style.display = 'flex';
+  toast('Chat reiniciado');
+}
+
 function appendMsg(role, text) {
   const wrap = document.getElementById('chat-messages');
   const div = document.createElement('div');
   div.className = `msg ${role}`;
-  const now = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-  div.innerHTML = `<div class="msg-bubble">${text.replace(/\n/g, '<br>')}</div><div class="msg-time">${now}</div>`;
+  const now = new Date().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+  const formatted = text.replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  div.innerHTML = `<div class="msg-bubble">${formatted}</div><div class="msg-time">${now}</div>`;
   wrap.appendChild(div);
   wrap.scrollTop = wrap.scrollHeight;
-  return div;
 }
 
 function appendLoader() {
   const wrap = document.getElementById('chat-messages');
   const div = document.createElement('div');
-  div.className = 'msg assistant';
-  div.id = 'loader-msg';
+  div.className = 'msg assistant'; div.id = 'loader-msg';
   div.innerHTML = `<div class="msg-bubble"><div class="dot-loader"><span></span><span></span><span></span></div></div>`;
   wrap.appendChild(div);
   wrap.scrollTop = wrap.scrollHeight;
 }
 
 async function fetchCoach() {
-  if (!apiKey) {
-    appendMsg('assistant', 'Necesitás configurar tu API key de Anthropic primero. Tocá el ícono de ajustes arriba a la derecha.');
-    return;
-  }
+  if (!apiKey) { appendMsg('assistant', 'Configurá tu API key de Anthropic en ajustes primero.'); return; }
   document.getElementById('send-btn').disabled = true;
   appendLoader();
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: buildSystemPrompt(),
-        messages: chatHistory
-      })
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 600, system: buildSystemPrompt(), messages: chatHistory })
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
@@ -777,62 +723,25 @@ async function fetchCoach() {
     appendMsg('assistant', reply);
   } catch(e) {
     document.getElementById('loader-msg')?.remove();
-    appendMsg('assistant', `Error: ${e.message}. Verificá tu API key en configuración.`);
+    appendMsg('assistant', `Error: ${e.message}`);
   }
   document.getElementById('send-btn').disabled = false;
 }
 
-function handleChatKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-}
-
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
-}
-
-// ── SETTINGS ──
-function showSettings() {
-  document.getElementById('settings-modal').classList.add('show');
-}
-function closeSettings(e) {
-  if (!e || e.target === document.getElementById('settings-modal')) {
-    document.getElementById('settings-modal').classList.remove('show');
-  }
-}
-function saveApiKey() {
-  apiKey = document.getElementById('api-key-input').value.trim();
-  localStorage.setItem(API_KEY_STORE, apiKey);
-  closeSettings();
-  toast('API key guardada');
-}
-
-// ── EXPORT ──
+function handleChatKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
+function showSettings() { document.getElementById('settings-modal').classList.add('show'); }
+function closeSettings(e) { if (!e || e.target === document.getElementById('settings-modal')) document.getElementById('settings-modal').classList.remove('show'); }
+function saveApiKey() { apiKey = document.getElementById('api-key-input').value.trim(); localStorage.setItem(API_KEY_STORE, apiKey); closeSettings(); toast('API key guardada'); }
 function exportData() {
-  const blob = new Blob([JSON.stringify({ sessions, focusConcepts }, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `caddie-export-${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
+  const blob = new Blob([JSON.stringify({ sessions, focusConcepts, progressSummary }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `caddie-export-${new Date().toISOString().split('T')[0]}.json`; a.click();
 }
+function fmtDate(d) { if (!d) return ''; return new Date(d+'T12:00:00').toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'}); }
+function fmtShort(d) { if (!d) return ''; return new Date(d+'T12:00:00').toLocaleDateString('es-AR',{day:'numeric',month:'short'}); }
+function toast(msg) { const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
 
-// ── UTILS ──
-function fmtDate(d) {
-  if (!d) return '';
-  return new Date(d + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-function fmtShort(d) {
-  if (!d) return '';
-  return new Date(d + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
-}
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2200);
-}
-
-// ── INIT ──
 document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
 load();
 </script>
