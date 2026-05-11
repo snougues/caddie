@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Caddie">
 <meta name="theme-color" content="#1a4d2e">
+<link rel="apple-touch-icon" href="icon.png">
 <title>Caddie</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -119,8 +120,8 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 .dot-loader span:nth-child(2) { animation-delay: 0.2s; }
 .dot-loader span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes dl { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
-.bottom-nav { display: flex; align-items: center; min-height: 76px; background: var(--white); border-top: 0.5px solid var(--border); flex-shrink: 0; z-index: 10; }
-.nav-item { flex: 1; min-height: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; cursor: pointer; border: none; background: none; }
+.bottom-nav { display: flex; background: var(--white); border-top: 0.5px solid var(--border); flex-shrink: 0; z-index: 10; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 45px 0 42px; cursor: pointer; border: none; background: none; }
 .nav-icon { font-size: 20px; color: var(--cream-dark); transition: color 0.2s; }
 .nav-label { font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cream-dark); margin-top: 2px; }
 .nav-dot { width: 3px; height: 3px; background: var(--gold); border-radius: 50%; margin-top: 3px; opacity: 0; }
