@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Caddie">
@@ -36,7 +36,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; background: var(--green); }
 body { font-family: var(--font-sans); color: var(--text-primary); }
-#app { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--cream); }
+#app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; background: var(--cream); }
 .screen { display: none; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; min-height: 0; }
 .screen.active { display: flex; flex-direction: column; }
 
@@ -50,6 +50,14 @@ body { font-family: var(--font-sans); color: var(--text-primary); }
 .logo-icon { width: 28px; height: 28px; }
 .logo-name { font-family: var(--font-serif); font-size: 36px; font-weight: 600; color: var(--gold); letter-spacing: 0.005em; }
 .icon-btn { width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 16px; flex-shrink: 0; }
+
+/* ── SYNC DOT ── */
+.header-right { display: flex; align-items: center; gap: 8px; }
+#sync-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: background 0.4s; flex-shrink: 0; }
+#sync-dot.syncing { background: var(--gold); animation: syncpulse 1s ease-in-out infinite; }
+#sync-dot.synced  { background: #4ade80; }
+#sync-dot.error   { background: #f87171; }
+@keyframes syncpulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
 .header-kpi-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(201,168,76,0.65); margin-bottom: 2px; }
 .header-score { font-family: var(--font-serif); font-size: 52px; font-weight: 300; color: var(--white); line-height: 1; }
@@ -70,7 +78,9 @@ body { font-family: var(--font-sans); color: var(--text-primary); }
 .card-gold { border-left: 2px solid var(--gold); }
 
 /* ── SESSION CARDS ── */
-.session-card { background: var(--white); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px; margin-bottom: 8px; }
+.swipe-wrapper { position: relative; overflow: hidden; border-radius: var(--radius); margin-bottom: 8px; }
+.swipe-delete-bg { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: #e53e3e; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; border-radius: var(--radius); }
+.session-card { background: var(--white); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px; margin-bottom: 0; position: relative; transition: transform 0.15s ease; touch-action: pan-y; will-change: transform; }
 .sc-top { display: flex; justify-content: space-between; align-items: flex-start; }
 .sc-tag { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-bottom: 4px; }
 .tag-ronda { background: #e8f3ec; color: #1a4d2e; }
@@ -159,10 +169,17 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 .settings-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 1px; }
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
 .modal-overlay.show { opacity: 1; pointer-events: all; }
-.modal-sheet { background: var(--white); border-radius: 20px 20px 0 0; padding: 20px 20px calc(20px + var(--safe-bottom)); width: 100%; transform: translateY(100%); transition: transform 0.3s ease; max-height: 85vh; overflow-y: auto; }
+.modal-sheet { background: var(--white); border-radius: 20px 20px 0 0; padding: 20px 20px calc(20px + var(--safe-bottom)); width: 100%; transform: translateY(100%); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto; }
 .modal-overlay.show .modal-sheet { transform: translateY(0); }
 .modal-handle { width: 36px; height: 4px; background: var(--cream-dark); border-radius: 2px; margin: 0 auto 16px; }
 .modal-title { font-family: var(--font-serif); font-size: 20px; font-weight: 400; color: var(--green); margin-bottom: 16px; }
+
+/* ── GIST STATUS LINE ── */
+.gist-status-line { display: flex; align-items: center; gap: 7px; margin-top: 10px; font-size: 11px; color: var(--text-tertiary); min-height: 18px; }
+.gist-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cream-dark); flex-shrink: 0; }
+.gist-dot.ok   { background: #4ade80; }
+.gist-dot.err  { background: #f87171; }
+.gist-dot.spin { background: var(--gold); animation: syncpulse 1s ease-in-out infinite; }
 
 /* ── TOAST ── */
 .toast { position: fixed; bottom: calc(72px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--green); color: var(--white); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100; white-space: nowrap; }
@@ -192,7 +209,10 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
           </svg>
           <span class="logo-name">Caddie.</span>
         </div>
-        <button class="icon-btn" onclick="showSettings()" aria-label="Configuración"><i class="ti ti-settings"></i></button>
+        <div class="header-right">
+          <div id="sync-dot" title="Estado de sincronización"></div>
+          <button class="icon-btn" onclick="showSettings()" aria-label="Configuración"><i class="ti ti-settings"></i></button>
+        </div>
       </div>
       <div class="header-kpi-label">Score promedio</div>
       <div class="header-score" id="h-score">— <sub>sin rondas aún</sub></div>
@@ -347,6 +367,8 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title">Configuración</div>
+
+    <!-- API KEY -->
     <div class="card">
       <div class="settings-row" style="padding-top:0;">
         <div><div class="settings-label">API Key de Anthropic</div><div class="settings-sub">Para el coach y los resúmenes automáticos</div></div>
@@ -360,6 +382,36 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
       </div>
       <div style="margin-top:12px;font-size:11px;color:var(--text-tertiary);line-height:1.5;">Obtené tu key en <strong>console.anthropic.com</strong>. Se guarda solo en este dispositivo.</div>
     </div>
+
+    <!-- GIST SYNC -->
+    <div class="card" style="margin-top:12px;">
+      <div class="settings-row" style="padding-top:0;padding-bottom:12px;">
+        <div><div class="settings-label">☁️ Sincronización</div><div class="settings-sub">Respaldo automático via GitHub Gist</div></div>
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">GitHub Token</label>
+        <input type="password" id="gist-token-input" placeholder="github_pat_..." style="font-family:monospace;font-size:13px;">
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">Gist ID <span style="font-weight:300;text-transform:none;letter-spacing:0;opacity:0.7">(se crea automático la primera vez)</span></label>
+        <input type="text" id="gist-id-input" placeholder="Se completa solo" style="font-family:monospace;font-size:12px;" readonly>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn-primary" style="font-size:13px;padding:10px;flex:1;min-width:120px;" onclick="saveGistConfig()">Guardar y conectar</button>
+        <button class="btn-ghost" onclick="forcePush()">↑ Subir</button>
+        <button class="btn-ghost" onclick="forcePull()">↓ Bajar</button>
+      </div>
+      <div class="gist-status-line" id="gist-status-line">
+        <div class="gist-dot" id="gist-status-dot"></div>
+        <span id="gist-status-text">Sin configurar</span>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--text-tertiary);line-height:1.6;">
+        Token: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained → permisos <strong>Gists: Read and write</strong>.<br>
+        En otro dispositivo: pegá el mismo token + el Gist ID de arriba.
+      </div>
+    </div>
+
+    <!-- DATOS -->
     <div style="margin-top:12px;" class="card">
       <div class="settings-row" style="padding-top:0;">
         <div><div class="settings-label">Regenerar resumen</div><div class="settings-sub">Actualiza el análisis de progreso</div></div>
@@ -371,7 +423,7 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
       </div>
       <div class="settings-row">
         <div class="settings-label">Versión</div>
-        <div style="font-size:13px;color:var(--text-tertiary);">Caddie 1.1</div>
+        <div style="font-size:13px;color:var(--text-tertiary);">Caddie 1.2</div>
       </div>
     </div>
   </div>
@@ -380,20 +432,28 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 <div class="toast" id="toast"></div>
 
 <script>
-const DB_KEY = 'caddie_sessions_v1';
-const FOCUS_KEY = 'caddie_focus_v1';
-const API_KEY_STORE = 'caddie_apikey_v1';
-const PROGRESS_KEY = 'caddie_progress_v1';
+// ─── KEYS ───────────────────────────────────────────────────────────────────
+const DB_KEY         = 'caddie_sessions_v1';
+const FOCUS_KEY      = 'caddie_focus_v1';
+const API_KEY_STORE  = 'caddie_apikey_v1';
+const PROGRESS_KEY   = 'caddie_progress_v1';
+const GIST_TOKEN_KEY = 'caddie_gist_token_v1';
+const GIST_ID_KEY    = 'caddie_gist_id_v1';
+const GIST_FILENAME  = 'caddie-data.json';
 
-let sessions = [];
-let focusConcepts = '';
-let apiKey = '';
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let sessions        = [];
+let focusConcepts   = '';
+let apiKey          = '';
 let progressSummary = '';
-let currentFilter = 'all';
-let currentType = 'ronda';
-let chatHistory = [];
+let currentFilter   = 'all';
+let currentType     = 'ronda';
+let chatHistory     = [];
 let scoreChartInstance = null;
+let gistToken       = '';
+let gistId          = '';
 
+// ─── PLAYER PROFILE ─────────────────────────────────────────────────────────
 const PLAYER_PROFILE = `PERFIL DEL JUGADOR (siempre presente, no cambia):
 - Volvió al golf después de 3-5 años sin jugar
 - Nivel previo: handicap medio (10-20)
@@ -414,25 +474,198 @@ INSTRUCCIONES PARA EL COACH:
 - Recordale los conceptos en foco cuando sea pertinente
 - Nunca des respuestas genéricas — siempre basate en su historial real y sus datos`;
 
+// ─── STORAGE HELPERS ────────────────────────────────────────────────────────
 function dbGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
 function dbSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { console.error(e); } }
 
-function load() {
-  sessions = dbGet(DB_KEY) || [];
-  focusConcepts = localStorage.getItem(FOCUS_KEY) || '';
-  apiKey = localStorage.getItem(API_KEY_STORE) || '';
-  progressSummary = localStorage.getItem(PROGRESS_KEY) || '';
-  if (apiKey) document.getElementById('api-key-input').value = apiKey;
-  updateHome();
-  updateHistory();
+// ─── SYNC DOT UI ────────────────────────────────────────────────────────────
+function setSyncDot(state) {
+  const dot = document.getElementById('sync-dot');
+  dot.className = '';
+  if (state === 'syncing') dot.classList.add('syncing');
+  else if (state === 'synced') dot.classList.add('synced');
+  else if (state === 'error') dot.classList.add('error');
 }
 
+function setGistStatus(state, msg) {
+  const dot  = document.getElementById('gist-status-dot');
+  const text = document.getElementById('gist-status-text');
+  dot.className = 'gist-dot' + (state ? ' ' + state : '');
+  text.textContent = msg || '';
+  setSyncDot(state === 'ok' ? 'synced' : state === 'err' ? 'error' : state === 'spin' ? 'syncing' : '');
+}
+
+// ─── GIST API ────────────────────────────────────────────────────────────────
+function gistHeaders() {
+  return {
+    'Accept': 'application/vnd.github+json',
+    'Authorization': `Bearer ${gistToken}`,
+    'X-GitHub-Api-Version': '2022-11-28',
+    'Content-Type': 'application/json'
+  };
+}
+
+function buildPayload() {
+  return JSON.stringify({ _v: 2, _ts: Date.now(), sessions, focusConcepts, progressSummary }, null, 2);
+}
+
+async function gistCreate() {
+  const res = await fetch('https://api.github.com/gists', {
+    method: 'POST',
+    headers: gistHeaders(),
+    body: JSON.stringify({
+      description: 'Caddie golf app — datos (generado automáticamente)',
+      public: false,
+      files: { [GIST_FILENAME]: { content: buildPayload() } }
+    })
+  });
+  if (!res.ok) { const t = await res.text(); throw new Error(`GitHub ${res.status}: ${t}`); }
+  const data = await res.json();
+  return data.id;
+}
+
+async function gistUpdate() {
+  const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+    method: 'PATCH',
+    headers: gistHeaders(),
+    body: JSON.stringify({ files: { [GIST_FILENAME]: { content: buildPayload() } } })
+  });
+  if (!res.ok) { const t = await res.text(); throw new Error(`GitHub ${res.status}: ${t}`); }
+}
+
+async function gistRead() {
+  const res = await fetch(`https://api.github.com/gists/${gistId}`, { headers: gistHeaders() });
+  if (!res.ok) throw new Error(`GitHub ${res.status}`);
+  const data = await res.json();
+  const raw = data.files?.[GIST_FILENAME]?.content;
+  return raw ? JSON.parse(raw) : null;
+}
+
+// ─── SYNC TO CLOUD ───────────────────────────────────────────────────────────
+async function syncUp(silent = false) {
+  if (!gistToken) return;
+  setGistStatus('spin', 'Sincronizando…');
+  try {
+    if (!gistId) {
+      gistId = await gistCreate();
+      localStorage.setItem(GIST_ID_KEY, gistId);
+      document.getElementById('gist-id-input').value = gistId;
+    } else {
+      await gistUpdate();
+    }
+    setGistStatus('ok', 'Sincronizado correctamente');
+    if (!silent) toast('☁️ Guardado en la nube');
+  } catch(e) {
+    setGistStatus('err', 'Error: ' + e.message);
+    if (!silent) toast('Error al sincronizar: ' + e.message);
+    console.error('syncUp:', e);
+  }
+}
+
+// ─── SYNC FROM CLOUD ─────────────────────────────────────────────────────────
+async function syncDown(silent = false) {
+  if (!gistToken || !gistId) return;
+  setGistStatus('spin', 'Bajando datos…');
+  try {
+    const remote = await gistRead();
+    if (!remote || !remote.sessions) {
+      setGistStatus('ok', 'Gist vacío');
+      return;
+    }
+    // Merge: add any remote sessions not in local (by id)
+    const localIds = new Set(sessions.map(s => s.id));
+    let added = 0;
+    (remote.sessions || []).forEach(s => {
+      if (!localIds.has(s.id)) { sessions.push(s); added++; }
+    });
+    if (added > 0) {
+      sessions.sort((a, b) => new Date(b.date) - new Date(a.date));
+      dbSet(DB_KEY, sessions);
+    }
+    // Use remote focus/summary only if local is empty
+    if (!focusConcepts && remote.focusConcepts) {
+      focusConcepts = remote.focusConcepts;
+      localStorage.setItem(FOCUS_KEY, focusConcepts);
+    }
+    if (!progressSummary && remote.progressSummary) {
+      progressSummary = remote.progressSummary;
+      localStorage.setItem(PROGRESS_KEY, progressSummary);
+    }
+    setGistStatus('ok', added > 0 ? `+${added} sesiones descargadas` : 'Todo al día');
+    if (!silent && added > 0) toast(`☁️ +${added} sesiones bajadas`);
+    else if (!silent) toast('☁️ Todo al día');
+    updateHome();
+    updateHistory();
+  } catch(e) {
+    setGistStatus('err', 'Error: ' + e.message);
+    if (!silent) toast('Error al bajar datos: ' + e.message);
+    console.error('syncDown:', e);
+  }
+}
+
+// ─── SETTINGS ACTIONS ────────────────────────────────────────────────────────
+async function saveGistConfig() {
+  const newToken = document.getElementById('gist-token-input').value.trim();
+  if (!newToken) { toast('Pegá el token primero'); return; }
+  gistToken = newToken;
+  localStorage.setItem(GIST_TOKEN_KEY, gistToken);
+  // Don't read gist-id-input since it's readonly and auto-populated
+  if (gistId) {
+    // Already have a gist: pull first to merge, then push
+    await syncDown(false);
+    await syncUp(true);
+  } else {
+    // First time: create gist with current local data
+    await syncUp(false);
+  }
+}
+
+async function forcePush() {
+  if (!gistToken) { toast('Configurá el token primero'); return; }
+  closeSettings();
+  await syncUp(false);
+}
+
+async function forcePull() {
+  if (!gistToken || !gistId) { toast('Configurá el token y conectá primero'); return; }
+  closeSettings();
+  await syncDown(false);
+}
+
+// ─── LOAD ────────────────────────────────────────────────────────────────────
+async function load() {
+  sessions        = dbGet(DB_KEY)               || [];
+  focusConcepts   = localStorage.getItem(FOCUS_KEY)     || '';
+  apiKey          = localStorage.getItem(API_KEY_STORE) || '';
+  progressSummary = localStorage.getItem(PROGRESS_KEY)  || '';
+  gistToken       = localStorage.getItem(GIST_TOKEN_KEY)|| '';
+  gistId          = localStorage.getItem(GIST_ID_KEY)   || '';
+
+  if (apiKey)    document.getElementById('api-key-input').value    = apiKey;
+  if (gistToken) document.getElementById('gist-token-input').value = gistToken;
+  if (gistId)    document.getElementById('gist-id-input').value    = gistId;
+
+  updateHome();
+  updateHistory();
+
+  // Auto-sync on startup
+  if (gistToken && gistId) {
+    await syncDown(true);
+  } else if (gistToken && !gistId) {
+    // Token exists but no gist yet: create one
+    await syncUp(true);
+  } else {
+    setGistStatus('', 'Sin configurar');
+  }
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
 function navigate(id, btn) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById('screen-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
-  if (id === 'home') updateHome();
+  if (id === 'home')    updateHome();
   if (id === 'history') updateHistory();
 }
 
@@ -445,25 +678,25 @@ function setType(type, btn) {
   document.getElementById('fields-clase').style.display = type === 'clase' ? 'block' : 'none';
 }
 
+// ─── SAVE SESSION ────────────────────────────────────────────────────────────
 async function saveSession() {
-  const date = document.getElementById('f-date').value || new Date().toISOString().split('T')[0];
+  const date  = document.getElementById('f-date').value  || new Date().toISOString().split('T')[0];
   const place = document.getElementById('f-place').value.trim();
   const notes = document.getElementById('f-notes').value.trim();
-  const mental = document.getElementById('f-mental').value;
+  const mental= document.getElementById('f-mental').value;
   const s = { id: Date.now(), type: currentType, date, place, notes, mental };
 
   if (currentType === 'ronda') {
     s.score = parseInt(document.getElementById('f-score').value) || null;
     s.putts = parseInt(document.getElementById('f-putts').value) || null;
-    s.fir = parseInt(document.getElementById('f-fir').value);
-    s.gir = parseInt(document.getElementById('f-gir').value);
+    s.fir   = parseInt(document.getElementById('f-fir').value);
+    s.gir   = parseInt(document.getElementById('f-gir').value);
     if (isNaN(s.fir)) s.fir = null;
     if (isNaN(s.gir)) s.gir = null;
   } else {
-    s.foco = document.getElementById('f-foco').value.trim();
-    s.duracion = parseInt(document.getElementById('f-dur').value) || null;
+    s.foco    = document.getElementById('f-foco').value.trim();
+    s.duracion= parseInt(document.getElementById('f-dur').value) || null;
   }
-
   if (currentType === 'clase') {
     s.instructor = document.getElementById('f-instructor').value.trim();
     const conceptos = document.getElementById('f-conceptos').value.trim();
@@ -475,9 +708,10 @@ async function saveSession() {
   clearForm();
   navigate('home', document.querySelector('.nav-item'));
   updateHome();
-  toast('Sesión guardada — generando resumen...');
+  toast('Sesión guardada — generando resumen…');
   await generateProgressSummary();
   updateHome();
+  syncUp(true); // fire-and-forget, don't block UI
   toast('Resumen actualizado');
 }
 
@@ -489,9 +723,10 @@ function clearForm() {
   document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
 }
 
+// ─── AI PROGRESS SUMMARY ─────────────────────────────────────────────────────
 function buildProgressPrompt() {
-  const rondas = sessions.filter(s => s.type === 'ronda' && s.score).slice(0, 15);
-  const clases = sessions.filter(s => s.type === 'clase').slice(0, 8);
+  const rondas    = sessions.filter(s => s.type === 'ronda'    && s.score).slice(0, 15);
+  const clases    = sessions.filter(s => s.type === 'clase').slice(0, 8);
   const practicas = sessions.filter(s => s.type === 'practica').slice(0, 8);
   let data = '';
   if (rondas.length > 0) {
@@ -560,9 +795,10 @@ async function forceRegenerateProgress() {
   toast('Resumen actualizado');
 }
 
+// ─── HOME / CHART ────────────────────────────────────────────────────────────
 function updateHome() {
   const rondas = sessions.filter(s => s.type === 'ronda' && s.score);
-  const last5 = rondas.slice(0, 5);
+  const last5  = rondas.slice(0, 5);
   if (last5.length > 0) {
     const avg = (last5.reduce((a, s) => a + s.score, 0) / last5.length).toFixed(1);
     document.getElementById('h-score').innerHTML = `${avg} <sub>promedio últimas ${last5.length}</sub>`;
@@ -598,7 +834,7 @@ function updateHome() {
 
 function renderChart(rondas) {
   const canvas = document.getElementById('scoreChart');
-  const msg = document.getElementById('no-chart-msg');
+  const msg    = document.getElementById('no-chart-msg');
   if (scoreChartInstance) { scoreChartInstance.destroy(); scoreChartInstance = null; }
   if (rondas.length < 2) { canvas.style.display = 'none'; msg.style.display = 'block'; return; }
   canvas.style.display = 'block'; msg.style.display = 'none';
@@ -611,17 +847,24 @@ function renderChart(rondas) {
   });
 }
 
-function renderSessionCard(s) {
+function renderSessionCard(s, swipeable = false) {
   const typeLabel = { ronda: 'Ronda completa', practica: 'Práctica / range', clase: 'Clase con instructor' };
-  const tagClass = { ronda: 'tag-ronda', practica: 'tag-practica', clase: 'tag-clase' };
+  const tagClass  = { ronda: 'tag-ronda', practica: 'tag-practica', clase: 'tag-clase' };
   let kpis = '';
   if (s.type === 'ronda') {
-    const parts = [s.fir!==null?`<div class="sc-kpi"><strong>${s.fir}/14</strong>FIR</div>`:'', s.gir!==null?`<div class="sc-kpi"><strong>${s.gir}/18</strong>GIR</div>`:'', s.putts?`<div class="sc-kpi"><strong>${s.putts}</strong>Putts</div>`:''].filter(Boolean);
+    const parts = [
+      s.fir  !== null ? `<div class="sc-kpi"><strong>${s.fir}/14</strong>FIR</div>`  : '',
+      s.gir  !== null ? `<div class="sc-kpi"><strong>${s.gir}/18</strong>GIR</div>`  : '',
+      s.putts         ? `<div class="sc-kpi"><strong>${s.putts}</strong>Putts</div>` : ''
+    ].filter(Boolean);
     if (parts.length) kpis = `<div class="sc-kpis">${parts.join('')}</div>`;
   }
-  const right = s.score ? `<div class="sc-score">${s.score}</div>` : s.duracion ? `<div style="font-size:12px;color:var(--text-tertiary);">${s.duracion} min</div>` : '';
-  const foco = s.foco ? `<div style="font-size:11px;color:var(--gold);margin-top:3px;">Foco: ${s.foco}</div>` : '';
-  return `<div class="session-card"><div class="sc-top"><div><span class="sc-tag ${tagClass[s.type]}">${typeLabel[s.type]}</span><div class="sc-place">${fmtDate(s.date)}${s.place?' · '+s.place:''}${s.mental?' · '+s.mental:''}</div>${foco}</div>${right}</div>${kpis}${s.notes?`<div class="sc-note">${s.notes.slice(0,120)}${s.notes.length>120?'…':''}</div>`:''}</div>`;
+  const right = s.score    ? `<div class="sc-score">${s.score}</div>`
+              : s.duracion ? `<div style="font-size:12px;color:var(--text-tertiary);">${s.duracion} min</div>` : '';
+  const foco  = s.foco ? `<div style="font-size:11px;color:var(--gold);margin-top:3px;">Foco: ${s.foco}</div>` : '';
+  const card  = `<div class="session-card" data-id="${s.id}"><div class="sc-top"><div><span class="sc-tag ${tagClass[s.type]}">${typeLabel[s.type]}</span><div class="sc-place">${fmtDate(s.date)}${s.place?' · '+s.place:''}${s.mental?' · '+s.mental:''}</div>${foco}</div>${right}</div>${kpis}${s.notes?`<div class="sc-note">${s.notes.slice(0,120)}${s.notes.length>120?'…':''}</div>`:''}</div>`;
+  if (!swipeable) return card;
+  return `<div class="swipe-wrapper" data-id="${s.id}"><div class="swipe-delete-bg"><i class="ti ti-trash"></i></div>${card}</div>`;
 }
 
 function setFilter(f, btn) {
@@ -636,14 +879,101 @@ function updateHistory() {
   const filtered = currentFilter === 'all' ? sessions : sessions.filter(s => s.type === currentFilter);
   el.innerHTML = filtered.length === 0
     ? `<div class="empty"><div class="empty-icon"><i class="ti ti-flag"></i></div><div class="empty-text">No hay sesiones aquí todavía.</div></div>`
-    : filtered.map(s => renderSessionCard(s)).join('');
+    : filtered.map(s => renderSessionCard(s, true)).join('');
+  attachSwipeHandlers();
 }
 
+function attachSwipeHandlers() {
+  document.querySelectorAll('#history-list .swipe-wrapper').forEach(wrapper => {
+    const card = wrapper.querySelector('.session-card');
+    let startX = 0, startY = 0, currentX = 0, swiping = false, committed = false;
+    const THRESHOLD = 72; // px to reveal delete
+
+    card.addEventListener('touchstart', e => {
+      startX   = e.touches[0].clientX;
+      startY   = e.touches[0].clientY;
+      currentX = 0;
+      swiping  = false;
+      committed= false;
+      card.style.transition = 'none';
+    }, { passive: true });
+
+    card.addEventListener('touchmove', e => {
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+      // Lock to horizontal swipe only
+      if (!swiping && Math.abs(dy) > Math.abs(dx)) return;
+      if (!swiping && Math.abs(dx) > 5) swiping = true;
+      if (!swiping) return;
+      e.preventDefault();
+      currentX = Math.min(0, dx); // only left
+      card.style.transform = `translateX(${currentX}px)`;
+    }, { passive: false });
+
+    card.addEventListener('touchend', () => {
+      if (!swiping) return;
+      card.style.transition = 'transform 0.2s ease';
+      if (currentX < -THRESHOLD) {
+        // Snap open
+        card.style.transform = `translateX(-80px)`;
+        committed = true;
+      } else {
+        // Snap closed
+        card.style.transform = 'translateX(0)';
+        committed = false;
+      }
+    });
+
+    // Tap on revealed delete bg confirms delete
+    wrapper.querySelector('.swipe-delete-bg').addEventListener('click', () => {
+      const id = parseInt(wrapper.dataset.id);
+      deleteSession(id, wrapper);
+    });
+
+    // Tap elsewhere snaps card back
+    card.addEventListener('click', () => {
+      if (committed) {
+        card.style.transition = 'transform 0.2s ease';
+        card.style.transform  = 'translateX(0)';
+        committed = false;
+      }
+    });
+  });
+}
+
+function deleteSession(id, wrapperEl) {
+  if (!confirm('¿Borrar esta sesión?')) {
+    // snap back
+    const card = wrapperEl.querySelector('.session-card');
+    card.style.transition = 'transform 0.2s ease';
+    card.style.transform  = 'translateX(0)';
+    return;
+  }
+  sessions = sessions.filter(s => s.id !== id);
+  dbSet(DB_KEY, sessions);
+  // Animate out
+  wrapperEl.style.transition = 'opacity 0.2s, max-height 0.25s ease, margin 0.25s ease';
+  wrapperEl.style.maxHeight  = wrapperEl.offsetHeight + 'px';
+  wrapperEl.style.overflow   = 'hidden';
+  requestAnimationFrame(() => {
+    wrapperEl.style.opacity   = '0';
+    wrapperEl.style.maxHeight = '0';
+    wrapperEl.style.marginBottom = '0';
+  });
+  setTimeout(() => {
+    wrapperEl.remove();
+    updateHome();
+    syncUp(true);
+    toast('Sesión eliminada');
+  }, 280);
+}
+
+// ─── COACH ───────────────────────────────────────────────────────────────────
 function buildSystemPrompt() {
   let p = `Sos Caddie, coach de golf personal. Experto en técnica, juego mental y estrategia.\n\n`;
   p += PLAYER_PROFILE + '\n\n';
   if (progressSummary) p += `RESUMEN DE PROGRESO (análisis automático de todos los datos):\n${progressSummary}\n\n`;
-  if (focusConcepts) p += `CONCEPTOS EN FOCO (última clase con instructor):\n${focusConcepts}\n\n`;
+  if (focusConcepts)   p += `CONCEPTOS EN FOCO (última clase con instructor):\n${focusConcepts}\n\n`;
   const ultimasRondas = sessions.filter(s => s.type === 'ronda' && s.score).slice(0, 5);
   if (ultimasRondas.length > 0) {
     p += `ÚLTIMAS 5 RONDAS:\n`;
@@ -676,7 +1006,7 @@ function buildSystemPrompt() {
 
 async function sendMessage() {
   const input = document.getElementById('chat-input');
-  const msg = input.value.trim();
+  const msg   = input.value.trim();
   if (!msg) return;
   input.value = ''; input.style.height = 'auto';
   appendMsg('user', msg);
@@ -692,7 +1022,7 @@ function sendQuick(text) {
 
 function resetChat() {
   chatHistory = [];
-  const wrap = document.getElementById('chat-messages');
+  const wrap  = document.getElementById('chat-messages');
   wrap.innerHTML = `<div class="msg assistant"><div class="msg-bubble">Nueva consulta. ¿En qué arrancamos?</div><div class="msg-time">Ahora</div></div>`;
   document.getElementById('quick-chips').style.display = 'flex';
   toast('Chat reiniciado');
@@ -700,7 +1030,7 @@ function resetChat() {
 
 function appendMsg(role, text) {
   const wrap = document.getElementById('chat-messages');
-  const div = document.createElement('div');
+  const div  = document.createElement('div');
   div.className = `msg ${role}`;
   const now = new Date().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
   const formatted = text.replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
@@ -711,7 +1041,7 @@ function appendMsg(role, text) {
 
 function appendLoader() {
   const wrap = document.getElementById('chat-messages');
-  const div = document.createElement('div');
+  const div  = document.createElement('div');
   div.className = 'msg assistant'; div.id = 'loader-msg';
   div.innerHTML = `<div class="msg-bubble"><div class="dot-loader"><span></span><span></span><span></span></div></div>`;
   wrap.appendChild(div);
@@ -741,19 +1071,20 @@ async function fetchCoach() {
   document.getElementById('send-btn').disabled = false;
 }
 
+// ─── MISC ────────────────────────────────────────────────────────────────────
 function handleChatKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
-function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
-function showSettings() { document.getElementById('settings-modal').classList.add('show'); }
+function autoResize(el)   { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
+function showSettings()   { document.getElementById('settings-modal').classList.add('show'); }
 function closeSettings(e) { if (!e || e.target === document.getElementById('settings-modal')) document.getElementById('settings-modal').classList.remove('show'); }
-function saveApiKey() { apiKey = document.getElementById('api-key-input').value.trim(); localStorage.setItem(API_KEY_STORE, apiKey); closeSettings(); toast('API key guardada'); }
+function saveApiKey()     { apiKey = document.getElementById('api-key-input').value.trim(); localStorage.setItem(API_KEY_STORE, apiKey); closeSettings(); toast('API key guardada'); }
 function exportData() {
   const blob = new Blob([JSON.stringify({ sessions, focusConcepts, progressSummary }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = `caddie-export-${new Date().toISOString().split('T')[0]}.json`; a.click();
 }
-function fmtDate(d) { if (!d) return ''; return new Date(d+'T12:00:00').toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'}); }
+function fmtDate(d)  { if (!d) return ''; return new Date(d+'T12:00:00').toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'}); }
 function fmtShort(d) { if (!d) return ''; return new Date(d+'T12:00:00').toLocaleDateString('es-AR',{day:'numeric',month:'short'}); }
-function toast(msg) { const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
+function toast(msg)  { const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
 
 document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
 load();
