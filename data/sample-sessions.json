@@ -1,0 +1,49 @@
+{
+  "sessions": [
+    {
+      "id": 1715000000001,
+      "type": "ronda",
+      "date": "2025-04-12",
+      "place": "Club de Golf",
+      "score": 98,
+      "putts": 36,
+      "fir": 6,
+      "gir": 5,
+      "notes": "Driver inconsistente en los últimos hoyos. Putting sólido.",
+      "mental": "enfocado"
+    },
+    {
+      "id": 1715000000002,
+      "type": "practica",
+      "date": "2025-04-15",
+      "place": "Driving range",
+      "foco": "Tempo con hierros medios",
+      "duracion": 60,
+      "notes": "Trabajé con metrónomo. Mejor contacto con 7 hierro.",
+      "mental": "muy confiado"
+    },
+    {
+      "id": 1715000000003,
+      "type": "clase",
+      "date": "2025-04-18",
+      "place": "Academia",
+      "instructor": "Carlos",
+      "notes": "Revisamos grip y alineación de hombros en el setup.",
+      "mental": "enfocado"
+    },
+    {
+      "id": 1715000000004,
+      "type": "ronda",
+      "date": "2025-04-20",
+      "place": "Club de Golf",
+      "score": 94,
+      "putts": 33,
+      "fir": 8,
+      "gir": 7,
+      "notes": "Mejor ronda del mes. Apliqué el tempo de la clase.",
+      "mental": "muy confiado"
+    }
+  ],
+  "focusConcepts": "1. Grip neutro — presión suave en los dedos\n2. Tempo más lento en el backswing\n3. Hombros alineados al target en el setup",
+  "progressSummary": ""
+}

@@ -1,0 +1,18 @@
+{
+  "name": "caddie",
+  "version": "1.2.0",
+  "description": "Personal golf coach app — track rounds, practice, and chat with an AI caddie",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.54.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0"
+  }
+}

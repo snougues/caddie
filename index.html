@@ -49,7 +49,7 @@ body { font-family: var(--font-sans); color: var(--text-primary); }
 .logo { display: flex; align-items: center; gap: 10px; }
 .logo-icon { width: 28px; height: 28px; }
 .logo-name { font-family: var(--font-serif); font-size: 36px; font-weight: 600; color: var(--gold); letter-spacing: 0.005em; }
-.icon-btn { width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 16px; flex-shrink: 0; }
+.icon-btn { width: 44px; height: 44px; border: none; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 18px; flex-shrink: 0; }
 
 /* ── SYNC DOT ── */
 .header-right { display: flex; align-items: center; gap: 8px; }
@@ -110,7 +110,7 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 /* ── HISTORY ── */
 .filter-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; }
 .filter-row::-webkit-scrollbar { display: none; }
-.filter-btn { flex-shrink: 0; font-size: 11px; padding: 5px 12px; border: 0.5px solid var(--border); border-radius: 20px; background: var(--white); color: var(--text-secondary); cursor: pointer; font-family: var(--font-sans); }
+.filter-btn { flex-shrink: 0; font-size: 11px; padding: 8px 14px; border: 0.5px solid var(--border); border-radius: 20px; background: var(--white); color: var(--text-secondary); cursor: pointer; font-family: var(--font-sans); }
 .filter-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
 
 /* ── PROGRESS / FOCUS ── */
@@ -140,7 +140,7 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 .msg.user .msg-time { text-align: right; }
 .quick-chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px 16px 0; background: var(--cream); -webkit-overflow-scrolling: touch; scrollbar-width: none; flex-shrink: 0; }
 .quick-chips::-webkit-scrollbar { display: none; }
-.chip { flex-shrink: 0; font-size: 12px; padding: 6px 12px; border: 0.5px solid var(--green); border-radius: 20px; background: transparent; color: var(--green); cursor: pointer; font-family: var(--font-sans); }
+.chip { flex-shrink: 0; font-size: 12px; padding: 10px 14px; border: 0.5px solid var(--green); border-radius: 20px; background: transparent; color: var(--green); cursor: pointer; font-family: var(--font-sans); }
 .chat-input-area { padding: 10px 12px calc(10px + var(--safe-bottom)); background: var(--white); border-top: 0.5px solid var(--border); flex-shrink: 0; }
 .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
 .chat-input-row textarea { flex: 1; min-height: 40px; max-height: 100px; padding: 9px 12px; font-size: 14px; line-height: 1.4; border-radius: 20px; }
@@ -440,6 +440,7 @@ const PROGRESS_KEY   = 'caddie_progress_v1';
 const GIST_TOKEN_KEY = 'caddie_gist_token_v1';
 const GIST_ID_KEY    = 'caddie_gist_id_v1';
 const GIST_FILENAME  = 'caddie-data.json';
+const CHAT_KEY       = 'caddie_chat_v1';
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
 let sessions        = [];
@@ -477,6 +478,39 @@ INSTRUCCIONES PARA EL COACH:
 // ─── STORAGE HELPERS ────────────────────────────────────────────────────────
 function dbGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
 function dbSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { console.error(e); } }
+
+// ─── ANTHROPIC API ───────────────────────────────────────────────────────────
+function useDevProxy() {
+  const h = location.hostname;
+  return h === 'localhost' || h === '127.0.0.1';
+}
+
+async function anthropicMessages(body) {
+  if (useDevProxy()) {
+    const res = await fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`);
+    return data;
+  }
+  if (!apiKey) throw new Error('Configurá tu API key de Anthropic en ajustes primero.');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data;
+}
 
 // ─── SYNC DOT UI ────────────────────────────────────────────────────────────
 function setSyncDot(state) {
@@ -556,8 +590,8 @@ async function syncUp(silent = false) {
     setGistStatus('ok', 'Sincronizado correctamente');
     if (!silent) toast('☁️ Guardado en la nube');
   } catch(e) {
-    setGistStatus('err', 'Error: ' + e.message);
-    if (!silent) toast('Error al sincronizar: ' + e.message);
+    setGistStatus('err', 'Error al sincronizar: ' + e.message);
+    toast('☁️ Error al guardar en la nube');
     console.error('syncUp:', e);
   }
 }
@@ -598,7 +632,7 @@ async function syncDown(silent = false) {
     updateHistory();
   } catch(e) {
     setGistStatus('err', 'Error: ' + e.message);
-    if (!silent) toast('Error al bajar datos: ' + e.message);
+    toast('☁️ Error al sincronizar');
     console.error('syncDown:', e);
   }
 }
@@ -644,6 +678,13 @@ async function load() {
   if (apiKey)    document.getElementById('api-key-input').value    = apiKey;
   if (gistToken) document.getElementById('gist-token-input').value = gistToken;
   if (gistId)    document.getElementById('gist-id-input').value    = gistId;
+
+  chatHistory = dbGet(CHAT_KEY) || [];
+  if (chatHistory.length > 0) {
+    const wrap = document.getElementById('chat-messages');
+    wrap.innerHTML = '';
+    chatHistory.forEach(m => appendMsg(m.role, m.content));
+  }
 
   updateHome();
   updateHistory();
@@ -773,15 +814,13 @@ DATOS:\n${data}`;
 }
 
 async function generateProgressSummary() {
-  if (!apiKey || sessions.length < 2) return;
+  if ((!useDevProxy() && !apiKey) || sessions.length < 2) return;
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 400, messages: [{ role: 'user', content: buildProgressPrompt() }] })
+    const data = await anthropicMessages({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 400,
+      messages: [{ role: 'user', content: buildProgressPrompt() }],
     });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
     const summary = data.content?.find(b => b.type === 'text')?.text || '';
     if (summary) { progressSummary = summary; localStorage.setItem(PROGRESS_KEY, progressSummary); }
   } catch(e) { console.error('Error generando resumen:', e); }
@@ -814,7 +853,7 @@ function updateHome() {
   }
   const progressEl = document.getElementById('progress-card');
   if (progressSummary) {
-    const formatted = progressSummary.replace(/\*\*(.+?):\*\*/g, '<strong>$1:</strong>').replace(/\n/g, '<br>');
+    const formatted = renderMarkdown(progressSummary);
     progressEl.innerHTML = `<div class="progress-summary">${formatted}</div>`;
   } else {
     progressEl.innerHTML = `<div style="font-size:13px;color:var(--text-tertiary);">El resumen aparece después de registrar al menos 2 sesiones.</div>`;
@@ -993,11 +1032,15 @@ function buildSystemPrompt() {
     p += `ÚLTIMA CLASE: ${ultimaClase.date}${ultimaClase.instructor?' con '+ultimaClase.instructor:''}\n`;
     if (ultimaClase.notes) p += `Notas: ${ultimaClase.notes.slice(0,120)}\n\n`;
   }
-  const ultimaPractica = sessions.filter(s => s.type === 'practica')[0];
-  if (ultimaPractica) {
-    p += `ÚLTIMA PRÁCTICA: ${ultimaPractica.date}`;
-    if (ultimaPractica.foco) p += ` | Foco: ${ultimaPractica.foco}`;
-    if (ultimaPractica.notes) p += ` | ${ultimaPractica.notes.slice(0,80)}`;
+  const practicas = sessions.filter(s => s.type === 'practica').slice(0, 3);
+  if (practicas.length > 0) {
+    p += `ÚLTIMAS PRÁCTICAS:\n`;
+    practicas.forEach(s => {
+      p += `· ${s.date}`;
+      if (s.foco)  p += ` | Foco: ${s.foco}`;
+      if (s.notes) p += ` | ${s.notes.slice(0, 80)}`;
+      p += '\n';
+    });
     p += '\n';
   }
   if (sessions.length === 0) p += `Sin sesiones todavía. Ayudalo a arrancar.\n`;
@@ -1011,6 +1054,7 @@ async function sendMessage() {
   input.value = ''; input.style.height = 'auto';
   appendMsg('user', msg);
   chatHistory.push({ role: 'user', content: msg });
+  dbSet(CHAT_KEY, chatHistory.slice(-40));
   await fetchCoach();
 }
 
@@ -1022,10 +1066,30 @@ function sendQuick(text) {
 
 function resetChat() {
   chatHistory = [];
+  dbSet(CHAT_KEY, []);
   const wrap  = document.getElementById('chat-messages');
   wrap.innerHTML = `<div class="msg assistant"><div class="msg-bubble">Nueva consulta. ¿En qué arrancamos?</div><div class="msg-time">Ahora</div></div>`;
   document.getElementById('quick-chips').style.display = 'flex';
   toast('Chat reiniciado');
+}
+
+function renderMarkdown(text) {
+  const lines = text.split('\n');
+  const out = [];
+  let inList = false;
+  for (const line of lines) {
+    const isBullet = /^[\-\*•]\s+/.test(line);
+    const isNum    = /^\d+\.\s+/.test(line);
+    if ((isBullet || isNum) && !inList) { out.push('<ul style="padding-left:16px;margin:4px 0">'); inList = true; }
+    if (!isBullet && !isNum && inList)  { out.push('</ul>'); inList = false; }
+    let l = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    if (isBullet)    l = '<li>' + l.replace(/^[\-\*•]\s+/, '') + '</li>';
+    else if (isNum)  l = '<li>' + l.replace(/^\d+\.\s+/, '') + '</li>';
+    else             l = l + '<br>';
+    out.push(l);
+  }
+  if (inList) out.push('</ul>');
+  return out.join('');
 }
 
 function appendMsg(role, text) {
@@ -1033,7 +1097,7 @@ function appendMsg(role, text) {
   const div  = document.createElement('div');
   div.className = `msg ${role}`;
   const now = new Date().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
-  const formatted = text.replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  const formatted = role === 'assistant' ? renderMarkdown(text) : text.replace(/\n/g,'<br>');
   div.innerHTML = `<div class="msg-bubble">${formatted}</div><div class="msg-time">${now}</div>`;
   wrap.appendChild(div);
   wrap.scrollTop = wrap.scrollHeight;
@@ -1049,19 +1113,22 @@ function appendLoader() {
 }
 
 async function fetchCoach() {
-  if (!apiKey) { appendMsg('assistant', 'Configurá tu API key de Anthropic en ajustes primero.'); return; }
+  if (!useDevProxy() && !apiKey) {
+    appendMsg('assistant', 'Configurá tu API key de Anthropic en ajustes primero.');
+    return;
+  }
   document.getElementById('send-btn').disabled = true;
   appendLoader();
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 600, system: buildSystemPrompt(), messages: chatHistory })
+    const data = await anthropicMessages({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 600,
+      system: buildSystemPrompt(),
+      messages: chatHistory,
     });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
     const reply = data.content?.find(b => b.type === 'text')?.text || 'No pude procesar la respuesta.';
     chatHistory.push({ role: 'assistant', content: reply });
+    dbSet(CHAT_KEY, chatHistory.slice(-40));
     document.getElementById('loader-msg')?.remove();
     appendMsg('assistant', reply);
   } catch(e) {
