@@ -817,7 +817,7 @@ async function generateProgressSummary() {
   if ((!useDevProxy() && !apiKey) || sessions.length < 2) return;
   try {
     const data = await anthropicMessages({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 400,
       messages: [{ role: 'user', content: buildProgressPrompt() }],
     });
@@ -1121,7 +1121,7 @@ async function fetchCoach() {
   appendLoader();
   try {
     const data = await anthropicMessages({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 600,
       system: buildSystemPrompt(),
       messages: chatHistory,

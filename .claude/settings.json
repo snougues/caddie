@@ -1,0 +1,55 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/snougues/Projects/caddie/.claude/hooks/block-env.sh",
+            "statusMessage": "Checking sensitive files..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/snougues/Projects/caddie/.claude/hooks/block-env-bash.sh",
+            "statusMessage": "Checking sensitive files..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/snougues/Projects/caddie/.claude/hooks/restart-server.sh",
+            "statusMessage": "Restarting dev server...",
+            "async": true
+          },
+          {
+            "type": "command",
+            "command": "bash /Users/snougues/Projects/caddie/.claude/hooks/check-index-js.sh",
+            "statusMessage": "Validating JS in index.html..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/snougues/Projects/caddie/.claude/hooks/open-browser.sh",
+            "statusMessage": "Opening browser...",
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}
