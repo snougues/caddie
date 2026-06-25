@@ -310,7 +310,7 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
           </select>
         </div>
         <div id="course-edit-row" style="display:none;margin-top:-6px;margin-bottom:14px;text-align:right;">
-          <button class="btn-ghost" onclick="editCourse()">Editar rating / slope / SI de esta cancha</button>
+          <button class="btn-ghost" onclick="editCourse()">Editar cancha</button>
         </div>
 
         <!-- COURSE BUILDER -->
@@ -323,10 +323,6 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
                 <option value="9">9</option>
               </select>
             </div>
-          </div>
-          <div class="form-row" style="margin-bottom:14px;">
-            <div class="form-group" style="margin:0;"><label class="form-label">Calificación (rating)</label><input type="number" id="cb-rating" step="0.1" inputmode="decimal" placeholder="70.5"></div>
-            <div class="form-group" style="margin:0;"><label class="form-label">Slope</label><input type="number" id="cb-slope" inputmode="numeric" placeholder="125" min="55" max="155"></div>
           </div>
           <div class="sec-label">Par y handicap (SI) de cada hoyo</div>
           <div id="cb-grid" class="cb-grid"></div>
@@ -348,7 +344,7 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
             <label class="form-label">Tipo de tarjeta</label>
             <div class="type-selector" style="margin-bottom:0;">
               <button type="button" class="type-btn" id="pres-practice" onclick="setPresented(false)">Práctica</button>
-              <button type="button" class="type-btn" id="pres-official" onclick="setPresented(true)">Presentada (cuenta hcp)</button>
+              <button type="button" class="type-btn" id="pres-official" onclick="setPresented(true)">Presentada (oficial)</button>
             </div>
           </div>
           <div class="form-row" style="margin-bottom:0;">
@@ -505,6 +501,13 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
     <!-- DATOS -->
     <div style="margin-top:12px;" class="card">
       <div class="settings-row" style="padding-top:0;display:block;">
+        <div style="margin-bottom:8px;"><div class="settings-label">Handicap index actual</div><div class="settings-sub">Se actualiza solo con cada tarjeta presentada; editalo acá cuando quieras</div></div>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="index-input" step="0.1" inputmode="decimal" placeholder="Ej: 15.4" style="flex:1;">
+          <button class="btn-primary" style="font-size:13px;padding:10px 16px;" onclick="saveIndexConfig()">Guardar</button>
+        </div>
+      </div>
+      <div class="settings-row" style="display:block;">
         <div style="margin-bottom:10px;"><div class="settings-label">Métricas del inicio</div><div class="settings-sub">Rango de las estadísticas y gráficos</div></div>
         <div class="type-selector" style="margin-bottom:0;">
           <button class="type-btn" id="range-all" onclick="setMetricsRange('all')">Histórico</button>
@@ -554,6 +557,7 @@ const GIST_FILENAME  = 'caddie-data.json';
 const CHAT_KEY       = 'caddie_chat_v1';
 const COURSES_KEY    = 'caddie_courses_v1';
 const METRICS_RANGE_KEY = 'caddie_metricsrange_v1';
+const INDEX_KEY      = 'caddie_index_v1';
 const COACH_STYLE_URL= 'coach-style.md';
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
@@ -576,6 +580,7 @@ let editingId       = null;   // id of the session being edited, or null for a n
 let editingCourseId = null;   // id of the course being edited in the builder, or null for a new one
 let homeChartMode   = 'score';// 'score' | 'hi' — which series the home chart shows
 let metricsRange    = 'all';  // 'all' | 'year' — range filter for home metrics
+let currentIndex    = null;   // manually-entered current handicap index (number|null)
 
 // ─── PLAYER PROFILE ─────────────────────────────────────────────────────────
 const PLAYER_PROFILE = `PERFIL DEL JUGADOR (siempre presente, no cambia):
@@ -663,7 +668,7 @@ function gistHeaders() {
 }
 
 function buildPayload() {
-  return JSON.stringify({ _v: 4, _ts: Date.now(), sessions, courses, focusConcepts, progressSummary }, null, 2);
+  return JSON.stringify({ _v: 5, _ts: Date.now(), sessions, courses, focusConcepts, progressSummary, currentIndex }, null, 2);
 }
 
 async function gistCreate() {
@@ -755,6 +760,11 @@ async function syncDown(silent = false) {
       progressSummary = remote.progressSummary;
       localStorage.setItem(PROGRESS_KEY, progressSummary);
     }
+    if (currentIndex == null && remote.currentIndex != null) {
+      currentIndex = remote.currentIndex;
+      localStorage.setItem(INDEX_KEY, String(currentIndex));
+      syncIndexUI();
+    }
     setGistStatus('ok', added > 0 ? `+${added} sesiones descargadas` : 'Todo al día');
     if (!silent && added > 0) toast(`☁️ +${added} sesiones bajadas`);
     else if (!silent) toast('☁️ Todo al día');
@@ -795,6 +805,28 @@ function setMetricsRange(val) {
   localStorage.setItem(METRICS_RANGE_KEY, val);
   syncMetricsRangeUI();
   updateHome();
+}
+
+// Reflect currentIndex into the Settings input.
+function syncIndexUI() {
+  const el = document.getElementById('index-input');
+  if (el) el.value = currentIndex != null ? currentIndex : '';
+}
+
+function setCurrentIndex(val) {
+  currentIndex = (val == null || isNaN(val)) ? null : val;
+  if (currentIndex == null) localStorage.removeItem(INDEX_KEY);
+  else localStorage.setItem(INDEX_KEY, String(currentIndex));
+  syncIndexUI();
+}
+
+// Save the manually-edited index from Settings.
+function saveIndexConfig() {
+  const v = parseFloat(document.getElementById('index-input').value);
+  setCurrentIndex(isNaN(v) ? null : v);
+  updateHome();
+  syncUp(true);
+  toast(currentIndex != null ? 'Handicap index guardado' : 'Handicap index borrado');
 }
 
 async function forcePush() {
@@ -843,9 +875,12 @@ async function load() {
   gistId          = localStorage.getItem(GIST_ID_KEY)   || '';
   courses         = dbGet(COURSES_KEY)                   || [];
   metricsRange    = localStorage.getItem(METRICS_RANGE_KEY) || 'all';
+  const storedIdx = localStorage.getItem(INDEX_KEY);
+  currentIndex    = storedIdx != null && storedIdx !== '' ? parseFloat(storedIdx) : null;
 
   await loadCoachStyle();
   syncMetricsRangeUI();
+  syncIndexUI();
   populateCourseSelect();
 
   if (apiKey)    document.getElementById('api-key-input').value    = apiKey;
@@ -944,8 +979,6 @@ function editCourse() {
   editingCourseId = currentCourse.id;
   document.getElementById('cb-name').value   = currentCourse.name || '';
   document.getElementById('cb-holes').value  = String(currentCourse.holes.length);
-  document.getElementById('cb-rating').value = currentCourse.rating ?? '';
-  document.getElementById('cb-slope').value  = currentCourse.slope ?? '';
   renderCourseBuilderHoles(currentCourse.holes);
   document.getElementById('cb-save-btn').textContent = 'Guardar cambios';
   document.getElementById('course-edit-row').style.display = 'none';
@@ -978,8 +1011,6 @@ function saveCourse() {
   const name = document.getElementById('cb-name').value.trim();
   if (!name) { toast('Poné un nombre para la cancha'); return; }
   const n = parseInt(document.getElementById('cb-holes').value);
-  const rating = parseFloat(document.getElementById('cb-rating').value);
-  const slope  = parseInt(document.getElementById('cb-slope').value);
   const holes = [];
   const siSeen = new Set();
   for (let i = 1; i <= n; i++) {
@@ -991,10 +1022,10 @@ function saveCourse() {
   let course;
   if (editingCourseId) {
     course = courses.find(c => c.id === editingCourseId);
-    if (course) { course.name = name; course.rating = isNaN(rating) ? null : rating; course.slope = isNaN(slope) ? null : slope; course.holes = holes; }
+    if (course) { course.name = name; course.holes = holes; }
     editingCourseId = null;
   } else {
-    course = { id: Date.now(), name, rating: isNaN(rating) ? null : rating, slope: isNaN(slope) ? null : slope, holes };
+    course = { id: Date.now(), name, holes };
     courses.push(course);
   }
   dbSet(COURSES_KEY, courses);
@@ -1093,97 +1124,30 @@ function resetRoundEntry() {
   document.getElementById('cb-save-btn').textContent = 'Guardar cancha';
 }
 
-// ─── HANDICAP (WHS / AAG) ────────────────────────────────────────────────────
-// Course handicap used to allocate net-double-bogey strokes per hole.
-// Priority: starter-given playing handicap → derived from recorded index → 0.
-function courseHandicapFor(s) {
-  if (s.playingHandicap != null && !isNaN(s.playingHandicap)) return Math.round(s.playingHandicap);
-  if (s.handicapIndex != null && !isNaN(s.handicapIndex) && s.slope && s.rating != null && s.coursePar != null) {
-    return Math.round((s.slope / 113) * s.handicapIndex + (s.rating - s.coursePar));
-  }
-  return 0;
-}
+// ─── HANDICAP INDEX (manual) ─────────────────────────────────────────────────
+// The handicap index is entered by hand on each presented card (and editable in
+// Settings). No WHS computation — the app just stores and charts what you type.
 
-// Strokes received on a hole of stroke index `si` given course handicap `ch`.
-function holeStrokesReceived(si, ch, holeCount) {
-  if (!si || ch <= 0) return 0;
-  return Math.floor(ch / holeCount) + (si <= (ch % holeCount) ? 1 : 0);
-}
-
-// Adjusted gross: each played hole capped at net double bogey (par + 2 + strokes).
-function adjustedGross(s) {
-  if (!Array.isArray(s.holes)) return s.score ?? null;
-  const ch = courseHandicapFor(s);
-  const n = s.holes.length;
-  let total = 0;
-  for (const h of s.holes) {
-    if (h.strokes == null) continue;
-    const cap = h.par + 2 + holeStrokesReceived(h.si, ch, n);
-    total += Math.min(h.strokes, cap);
-  }
-  return total;
-}
-
-// A round qualifies for the index only if presented, 18 holes all played, with rating+slope.
-function isPresentedRound(s) {
-  return s.type === 'ronda' && s.presented === true && s.slope && s.rating != null
-      && Array.isArray(s.holes) && s.holes.length >= 18
-      && s.holes.every(h => h.strokes != null);
-}
-
-// Score differential. PCC assumed 0 (cannot be derived solo).
-function roundDifferential(s) {
-  if (!isPresentedRound(s)) return null;
-  const ags = adjustedGross(s);
-  if (ags == null) return null;
-  return Math.round((113 / s.slope) * (ags - s.rating) * 10) / 10;
-}
-
-// AAG scaling table: how many lowest differentials to average + adjustment, by count.
-function indexParams(n) {
-  if (n <= 3)  return { k: 1, adj: -2.0 };
-  if (n === 4) return { k: 1, adj: -1.0 };
-  if (n === 5) return { k: 1, adj: 0 };
-  if (n === 6) return { k: 2, adj: -1.0 };
-  if (n <= 8)  return { k: 2, adj: 0 };
-  if (n <= 11) return { k: 3, adj: 0 };
-  if (n <= 14) return { k: 4, adj: 0 };
-  if (n <= 16) return { k: 5, adj: 0 };
-  if (n <= 18) return { k: 6, adj: 0 };
-  if (n === 19) return { k: 7, adj: 0 };
-  return { k: 8, adj: 0 };
-}
-
-// Index from a chronological list of differentials (uses most recent ≤20).
-function computeIndexFrom(diffs) {
-  if (!diffs || diffs.length < 3) return null;
-  const last20 = diffs.slice(-20);
-  const { k, adj } = indexParams(last20.length);
-  const lowest = [...last20].sort((a, b) => a - b).slice(0, k);
-  const avg = lowest.reduce((a, b) => a + b, 0) / k;
-  return Math.round(Math.min(54.0, avg + adj) * 10) / 10;
-}
-
-function presentedDifferentials(list) {
+// Presented rounds that carry a manually-entered index, oldest first.
+function indexedPresentedRounds(list) {
   return (list || sessions)
-    .filter(isPresentedRound)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .map(s => ({ date: s.date, diff: roundDifferential(s) }))
-    .filter(d => d.diff != null);
+    .filter(s => s.type === 'ronda' && s.presented === true && s.handicapIndex != null)
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
-function handicapIndexNow(list) {
-  return computeIndexFrom(presentedDifferentials(list).map(d => d.diff));
+// Most recent presented card with an index (by date), or null.
+function latestPresentedIndex(list) {
+  const r = indexedPresentedRounds(list);
+  return r.length ? r[r.length - 1].handicapIndex : null;
 }
 
-// Chronological [{date, index}] recomputed after each qualifying round, for the chart.
-function handicapIndexHistory(list) {
-  const diffs = [];
+// Index evolution for the chart: chronological, collapsing consecutive equals.
+function indexHistory(list) {
   const out = [];
-  presentedDifferentials(list).forEach(d => {
-    diffs.push(d.diff);
-    const idx = computeIndexFrom(diffs);
-    if (idx != null) out.push({ date: d.date, index: idx });
+  indexedPresentedRounds(rangeFilter(list || sessions)).forEach(s => {
+    if (out.length === 0 || out[out.length - 1].index !== s.handicapIndex) {
+      out.push({ date: s.date, index: s.handicapIndex });
+    }
   });
   return out;
 }
@@ -1203,8 +1167,6 @@ async function saveSession() {
     s.courseId   = currentCourse.id;
     s.courseName = currentCourse.name;
     s.coursePar  = coursePar(currentCourse);
-    s.rating     = currentCourse.rating ?? null;
-    s.slope      = currentCourse.slope ?? null;
     s.holes      = roundHoles.map(h => ({ ...h }));
     s.score      = a.score;
     s.putts      = a.putts;
@@ -1236,6 +1198,11 @@ async function saveSession() {
     sessions.unshift(s);
   }
   dbSet(DB_KEY, sessions);
+  // A presented card's index becomes the current index, but only if it's the
+  // most recent presented card (so editing an old card doesn't clobber it).
+  if (s.type === 'ronda' && s.presented && s.handicapIndex != null && latestPresentedIndex() === s.handicapIndex) {
+    setCurrentIndex(s.handicapIndex);
+  }
   clearForm();
   navigate('home', document.querySelector('.nav-item'));
   updateHome();
@@ -1344,11 +1311,10 @@ function updateHome() {
   const rondas = scoped.filter(s => s.type === 'ronda' && s.score);
   const last5  = rondas.slice(0, 5);
 
-  // Big number: computed WHS handicap index
-  const hi = handicapIndexNow(scoped);
-  document.getElementById('h-score').innerHTML = hi != null
-    ? `${hi.toFixed(1)} <sub>${metricsRange === 'year' ? 'este año' : 'index actual'}</sub>`
-    : `— <sub>sin tarjetas presentadas</sub>`;
+  // Big number: manually-entered current handicap index
+  document.getElementById('h-score').innerHTML = currentIndex != null
+    ? `${Number(currentIndex).toFixed(1)} <sub>index actual</sub>`
+    : `— <sub>sin handicap aún</sub>`;
 
   // Secondary KPIs (last 5 rondas in range)
   if (last5.length > 0) {
@@ -1399,8 +1365,8 @@ function renderHomeChart() {
   let labels, values, best, padLow = 3, padHigh = 3, step = 3, emptyMsg;
 
   if (homeChartMode === 'hi') {
-    const hist = handicapIndexHistory(scoped);
-    emptyMsg = 'Registrá más tarjetas presentadas para ver la evolución del handicap.';
+    const hist = indexHistory(sessions);
+    emptyMsg = 'Cargá tarjetas presentadas con tu index para ver la evolución.';
     if (hist.length < 2) { canvas.style.display = 'none'; msg.textContent = emptyMsg; msg.style.display = 'block'; return; }
     const series = hist.slice(-12);
     labels = series.map(p => fmtShort(p.date));
@@ -1582,16 +1548,13 @@ function openSessionDetail(id) {
     const diffStr = diff == null ? '' : diff === 0 ? ' (E)' : diff > 0 ? ` (+${diff})` : ` (${diff})`;
     body += dtRow('Cancha', s.courseName ? esc(s.courseName) : (s.place ? esc(s.place) : ''));
     if (s.coursePar) body += dtRow('Par de cancha', s.coursePar);
-    body += dtRow('Tarjeta', s.presented ? 'Presentada (cuenta hcp)' : 'Práctica');
+    body += dtRow('Tarjeta', s.presented ? 'Presentada (oficial)' : 'Práctica');
     body += dtRow('Score', s.score != null ? s.score + diffStr : '');
     body += dtRow('Putts', s.putts);
     if (s.fir != null) body += dtRow('Fairways', `${s.fir}/${s.firTotal || 14}`);
     if (s.gir != null) body += dtRow('GIR', `${s.gir}/${s.girTotal || 18}`);
-    if (s.rating != null && s.slope) body += dtRow('Rating / Slope', `${s.rating} / ${s.slope}`);
     if (s.handicapIndex != null) body += dtRow('Handicap index', s.handicapIndex);
     if (s.playingHandicap != null) body += dtRow('Handicap de juego', s.playingHandicap);
-    const diffVal = roundDifferential(s);
-    if (diffVal != null) body += dtRow('Diferencial', diffVal.toFixed(1));
     body += dtRow('Estado mental', s.mental);
     if (s.holes && s.holes.length) body += renderDetailHoles(s.holes);
   } else if (s.type === 'clase') {
@@ -1640,8 +1603,6 @@ function editSession(id) {
     currentCourse = existing || {
       id: s.courseId || ('tmp-' + s.id),
       name: s.courseName || 'Cancha',
-      rating: s.rating ?? null,
-      slope: s.slope ?? null,
       holes: (s.holes || []).map(h => ({ num: h.num, par: h.par, si: h.si ?? null }))
     };
     document.getElementById('f-course').value = existing ? String(existing.id) : '';
