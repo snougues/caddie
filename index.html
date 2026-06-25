@@ -348,7 +348,7 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
             </div>
           </div>
           <div class="form-row" style="margin-bottom:0;">
-            <div class="form-group" style="margin:0;"><label class="form-label">Handicap index</label><input type="number" id="f-hindex" step="0.1" inputmode="decimal" placeholder="13.0"></div>
+            <div class="form-group" style="margin:0;"><label class="form-label">Handicap index</label><input type="text" id="f-hindex" inputmode="decimal" placeholder="17,1"></div>
             <div class="form-group" style="margin:0;"><label class="form-label">Handicap de juego</label><input type="number" id="f-phcp" inputmode="numeric" placeholder="14"></div>
           </div>
         </div>
@@ -502,10 +502,8 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
     <div style="margin-top:12px;" class="card">
       <div class="settings-row" style="padding-top:0;display:block;">
         <div style="margin-bottom:8px;"><div class="settings-label">Handicap index actual</div><div class="settings-sub">Se actualiza solo con cada tarjeta presentada; editalo acá cuando quieras</div></div>
-        <div style="display:flex;gap:8px;">
-          <input type="number" id="index-input" step="0.1" inputmode="decimal" placeholder="Ej: 15.4" style="flex:1;">
-          <button class="btn-primary" style="font-size:13px;padding:10px 16px;" onclick="saveIndexConfig()">Guardar</button>
-        </div>
+        <input type="text" id="index-input" inputmode="decimal" placeholder="Ej: 17,1" style="width:100%;font-size:17px;text-align:center;padding:12px;margin-bottom:8px;">
+        <button class="btn-primary" style="width:100%;font-size:14px;padding:11px;" onclick="saveIndexConfig()">Guardar handicap index</button>
       </div>
       <div class="settings-row" style="display:block;">
         <div style="margin-bottom:10px;"><div class="settings-label">Métricas del inicio</div><div class="settings-sub">Rango de las estadísticas y gráficos</div></div>
@@ -807,10 +805,21 @@ function setMetricsRange(val) {
   updateHome();
 }
 
-// Reflect currentIndex into the Settings input.
+// Index uses a comma decimal in Spanish (ej. 17,1). Parse comma-or-dot to a number.
+function parseIndex(str) {
+  if (str == null) return null;
+  const v = parseFloat(String(str).replace(',', '.').trim());
+  return isNaN(v) ? null : v;
+}
+// Format a number for display with a comma decimal (or '' for null).
+function fmtIndex(n) {
+  return n == null ? '' : String(n).replace('.', ',');
+}
+
+// Reflect currentIndex into the Settings input (shown with a comma).
 function syncIndexUI() {
   const el = document.getElementById('index-input');
-  if (el) el.value = currentIndex != null ? currentIndex : '';
+  if (el) el.value = fmtIndex(currentIndex);
 }
 
 function setCurrentIndex(val) {
@@ -822,8 +831,7 @@ function setCurrentIndex(val) {
 
 // Save the manually-edited index from Settings.
 function saveIndexConfig() {
-  const v = parseFloat(document.getElementById('index-input').value);
-  setCurrentIndex(isNaN(v) ? null : v);
+  setCurrentIndex(parseIndex(document.getElementById('index-input').value));
   updateHome();
   syncUp(true);
   toast(currentIndex != null ? 'Handicap index guardado' : 'Handicap index borrado');
@@ -1175,9 +1183,8 @@ async function saveSession() {
     s.gir        = a.gir;
     s.girTotal   = a.girTotal;
     s.presented  = roundPresented;
-    const hidx   = parseFloat(document.getElementById('f-hindex').value);
     const phcp   = parseInt(document.getElementById('f-phcp').value);
-    s.handicapIndex   = isNaN(hidx) ? null : hidx;
+    s.handicapIndex   = parseIndex(document.getElementById('f-hindex').value);
     s.playingHandicap = isNaN(phcp) ? null : phcp;
   } else {
     s.foco    = document.getElementById('f-foco').value.trim();
@@ -1313,7 +1320,7 @@ function updateHome() {
 
   // Big number: manually-entered current handicap index
   document.getElementById('h-score').innerHTML = currentIndex != null
-    ? `${Number(currentIndex).toFixed(1)} <sub>index actual</sub>`
+    ? `${fmtIndex(Number(currentIndex).toFixed(1))} <sub>index actual</sub>`
     : `— <sub>sin handicap aún</sub>`;
 
   // Secondary KPIs (last 5 rondas in range)
@@ -1553,7 +1560,7 @@ function openSessionDetail(id) {
     body += dtRow('Putts', s.putts);
     if (s.fir != null) body += dtRow('Fairways', `${s.fir}/${s.firTotal || 14}`);
     if (s.gir != null) body += dtRow('GIR', `${s.gir}/${s.girTotal || 18}`);
-    if (s.handicapIndex != null) body += dtRow('Handicap index', s.handicapIndex);
+    if (s.handicapIndex != null) body += dtRow('Handicap index', fmtIndex(s.handicapIndex));
     if (s.playingHandicap != null) body += dtRow('Handicap de juego', s.playingHandicap);
     body += dtRow('Estado mental', s.mental);
     if (s.holes && s.holes.length) body += renderDetailHoles(s.holes);
@@ -1617,7 +1624,7 @@ function editSession(id) {
     document.getElementById('scorecard').style.display = 'block';
     renderScorecard();
     setPresented(!!s.presented);
-    document.getElementById('f-hindex').value = s.handicapIndex ?? '';
+    document.getElementById('f-hindex').value = fmtIndex(s.handicapIndex);
     document.getElementById('f-phcp').value   = s.playingHandicap ?? '';
   } else {
     document.getElementById('f-foco').value = s.foco || '';
