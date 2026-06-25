@@ -47,6 +47,7 @@ gistToken / gistId  // GitHub Gist credentials for cloud sync
 | `caddie_focus_v1`    | focusConcepts string |
 | `caddie_apikey_v1`   | Anthropic API key |
 | `caddie_progress_v1` | cached progress summary |
+| `caddie_courses_v1`  | saved courses array (JSON) |
 | `caddie_gist_token_v1` / `caddie_gist_id_v1` | Gist credentials |
 
 ### API routing
@@ -57,18 +58,27 @@ gistToken / gistId  // GitHub Gist credentials for cloud sync
 
 Each session object has a `type` field: `ronda`, `practica`, or `clase`.
 
-- `ronda`: `score`, `putts`, `fir`, `gir`
+- `ronda`: hole-by-hole via a saved course. Stores `courseId`, `courseName`, `coursePar`, `holes[]` (each `{num, par, strokes, putts, gir, fir}`; `fir` is `null` on par 3s), plus computed aggregates `score`, `putts`, `fir`/`firTotal`, `gir`/`girTotal`. The aggregates keep home KPIs, the chart, and the coach prompt working. `firTotal`/`girTotal` default to 14/18 for legacy sessions.
 - `practica`: `foco` (focus text), `duracion`
-- `clase`: `instructor`, `conceptos` (sets `focusConcepts` globally)
+- `clase`: `instructor`, `conceptos` (stored on the session and also set as `focusConcepts` globally)
+
+### Courses
+
+A course is `{ id, name, holes: [{num, par}] }`; total par is derived via `coursePar(c)`. Built/selected in the Ronda form (`f-course` selector → `course-builder` → `scorecard`). Persisted to `caddie_courses_v1` and synced via Gist (merged additively by `id`, like sessions).
+
+### Reading sessions
+
+Tapping any session card (home "última sesión" or history list) calls `openSessionDetail(id)`, which opens the `#detail-modal` read-only view. Rounds render a full read-only scorecard from `holes[]`.
 
 ### AI features
 
 - **Progress summary** (`generateProgressSummary`): called after every `saveSession()`. Uses `buildProgressPrompt()` which includes the last 15 rounds, 8 lessons, and 8 practice sessions. Cached in localStorage. Requires ≥2 sessions.
-- **Coach chat** (`sendMessage`): uses `buildCoachSystem()` which injects `PLAYER_PROFILE` (hardcoded player bio at top of script) + `progressSummary` + `focusConcepts` + last 6 sessions as context. `chatHistory` is kept in memory (resets on `resetChat()`).
+- **Coach chat** (`sendMessage`): uses `buildSystemPrompt()` which injects `PLAYER_PROFILE` (hardcoded player bio) + `coachStyle` (from `coach-style.md`) + `progressSummary` + `focusConcepts` + recent sessions as context. `chatHistory` is kept in memory (resets on `resetChat()`).
+- **Coach style file** (`coach-style.md`): repo file describing *how* the coach talks/interacts. Fetched at startup by `loadCoachStyle()` (strips HTML comments, keeps from the first `## ` heading). Falls back to `COACH_STYLE_FALLBACK` if the fetch fails (e.g. opened via `file://`). Edit this file to tune the coach's tone — no code change needed.
 
 ### Gist sync
 
-`syncUp()` / `syncDown()` push/pull `{ _v, _ts, sessions, focusConcepts, progressSummary }` to a private GitHub Gist. `syncDown` merges by session `id` (additive only — no deletes from remote). Auto-sync runs on `load()` startup.
+`syncUp()` / `syncDown()` push/pull `{ _v, _ts, sessions, courses, focusConcepts, progressSummary }` to a private GitHub Gist. `syncDown` merges sessions and courses by `id` (additive only — no deletes from remote). Auto-sync runs on `load()` startup.
 
 ### Navigation
 

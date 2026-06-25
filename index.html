@@ -189,6 +189,44 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 .empty { text-align: center; padding: 48px 20px; }
 .empty-icon { font-size: 36px; color: var(--cream-dark); margin-bottom: 12px; }
 .empty-text { font-size: 14px; color: var(--text-tertiary); line-height: 1.5; }
+
+/* ── COURSE BUILDER ── */
+.cb-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+.cb-hole { display: flex; align-items: center; gap: 6px; }
+.cb-hole-label { font-size: 12px; color: var(--text-secondary); width: 26px; flex-shrink: 0; }
+.cb-hole select { padding: 7px 4px; font-size: 14px; text-align: center; }
+
+/* ── SCORECARD ── */
+.scorecard-totals { display: flex; gap: 4px; background: var(--green); color: var(--white); border-radius: var(--radius); padding: 12px 8px; margin-bottom: 12px; }
+.sct { flex: 1; text-align: center; }
+.sct-label { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(201,168,76,0.7); }
+.sct-val { font-family: var(--font-serif); font-size: 24px; font-weight: 300; line-height: 1.1; }
+.sct-val sub { font-size: 11px; color: rgba(255,255,255,0.45); font-family: var(--font-sans); }
+.hole-head, .hole-row { display: grid; grid-template-columns: 52px 1fr 1fr 38px 38px; gap: 6px; align-items: center; }
+.hole-head { font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-tertiary); padding: 0 2px 6px; text-align: center; }
+.hole-head span:first-child { text-align: left; }
+.hole-row { padding: 5px 0; border-bottom: 0.5px solid var(--cream-dark); }
+.hole-row:last-child { border-bottom: none; }
+.hole-id { font-size: 13px; font-weight: 500; color: var(--green); line-height: 1.1; }
+.hole-id span { display: block; font-size: 10px; color: var(--text-tertiary); font-weight: 400; }
+.hole-in { padding: 8px 2px; text-align: center; font-size: 15px; }
+.hole-toggle { padding: 9px 0; border: 0.5px solid var(--cream-dark); border-radius: var(--radius-sm); background: var(--cream); font-size: 10px; font-weight: 500; color: var(--text-tertiary); cursor: pointer; font-family: var(--font-sans); }
+.hole-toggle.on { background: var(--green); color: var(--white); border-color: var(--green); }
+.hole-toggle:disabled { opacity: 0.25; cursor: default; }
+
+/* ── DETAIL VIEW SCORECARD (read only) ── */
+.dt-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 8px 0; border-bottom: 0.5px solid var(--cream-dark); font-size: 13px; }
+.dt-row:last-child { border-bottom: none; }
+.dt-label { color: var(--text-secondary); }
+.dt-val { color: var(--text-primary); font-weight: 500; text-align: right; }
+.dt-notes { font-size: 13px; color: var(--text-secondary); line-height: 1.6; white-space: pre-wrap; margin-top: 4px; }
+.ro-head, .ro-row { display: grid; grid-template-columns: 1fr 40px 48px 40px 32px 32px; gap: 4px; align-items: center; font-size: 12px; }
+.ro-head { font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-tertiary); padding-bottom: 6px; text-align: center; }
+.ro-head span:first-child { text-align: left; }
+.ro-row { padding: 6px 0; border-bottom: 0.5px solid var(--cream-dark); text-align: center; }
+.ro-row span:first-child { text-align: left; color: var(--green); font-weight: 500; }
+.ro-row .mark-ok { color: #2a6b41; font-weight: 600; }
+.ro-row .mark-no { color: var(--text-tertiary); }
 </style>
 </head>
 <body>
@@ -257,13 +295,40 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
         <div class="form-group" style="margin:0;"><label class="form-label">Lugar</label><input type="text" id="f-place" placeholder="Club / cancha"></div>
       </div>
       <div id="fields-ronda">
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Score</label><input type="number" id="f-score" placeholder="95" min="50" max="150"></div>
-          <div class="form-group"><label class="form-label">Putts</label><input type="number" id="f-putts" placeholder="34" min="10" max="60"></div>
+        <div class="form-group">
+          <label class="form-label">Cancha</label>
+          <select id="f-course" onchange="onCourseSelect()">
+            <option value="">— Elegí una cancha —</option>
+            <option value="__new">➕ Nueva cancha</option>
+          </select>
         </div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Fairways hit (de 14)</label><input type="number" id="f-fir" placeholder="7" min="0" max="14"></div>
-          <div class="form-group"><label class="form-label">GIR (de 18)</label><input type="number" id="f-gir" placeholder="5" min="0" max="18"></div>
+
+        <!-- COURSE BUILDER -->
+        <div id="course-builder" style="display:none;">
+          <div class="form-row" style="margin-bottom:14px;">
+            <div class="form-group" style="margin:0;"><label class="form-label">Nombre</label><input type="text" id="cb-name" placeholder="Club X — Azul"></div>
+            <div class="form-group" style="margin:0;"><label class="form-label">Hoyos</label>
+              <select id="cb-holes" onchange="renderCourseBuilderHoles()">
+                <option value="18">18</option>
+                <option value="9">9</option>
+              </select>
+            </div>
+          </div>
+          <div class="sec-label">Par de cada hoyo</div>
+          <div id="cb-grid" class="cb-grid"></div>
+          <div style="display:flex;gap:8px;margin:14px 0 4px;">
+            <button class="btn-primary" style="font-size:13px;padding:11px;flex:1;" onclick="saveCourse()">Guardar cancha</button>
+            <button class="btn-ghost" onclick="cancelCourseBuilder()">Cancelar</button>
+          </div>
+        </div>
+
+        <!-- SCORECARD -->
+        <div id="scorecard" style="display:none;">
+          <div class="scorecard-totals" id="scorecard-totals"></div>
+          <div class="hole-head">
+            <span>Hoyo</span><span>Golpes</span><span>Putts</span><span>GIR</span><span>FIR</span>
+          </div>
+          <div id="scorecard-rows"></div>
         </div>
       </div>
       <div id="fields-other" style="display:none;">
@@ -429,6 +494,16 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
   </div>
 </div>
 
+<!-- SESSION DETAIL -->
+<div class="modal-overlay" id="detail-modal" onclick="closeDetail(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="detail-title">Sesión</div>
+    <div id="detail-body"></div>
+    <button class="btn-ghost" style="width:100%;margin-top:16px;" onclick="closeDetail()">Cerrar</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -441,6 +516,8 @@ const GIST_TOKEN_KEY = 'caddie_gist_token_v1';
 const GIST_ID_KEY    = 'caddie_gist_id_v1';
 const GIST_FILENAME  = 'caddie-data.json';
 const CHAT_KEY       = 'caddie_chat_v1';
+const COURSES_KEY    = 'caddie_courses_v1';
+const COACH_STYLE_URL= 'coach-style.md';
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
 let sessions        = [];
@@ -453,6 +530,10 @@ let chatHistory     = [];
 let scoreChartInstance = null;
 let gistToken       = '';
 let gistId          = '';
+let courses         = [];     // saved courses {id, name, par, holes:[{num,par}]}
+let coachStyle      = '';     // loaded from coach-style.md (how the coach talks)
+let currentCourse   = null;   // course selected for the round being entered
+let roundHoles      = [];     // working per-hole data during round entry
 
 // ─── PLAYER PROFILE ─────────────────────────────────────────────────────────
 const PLAYER_PROFILE = `PERFIL DEL JUGADOR (siempre presente, no cambia):
@@ -540,7 +621,7 @@ function gistHeaders() {
 }
 
 function buildPayload() {
-  return JSON.stringify({ _v: 2, _ts: Date.now(), sessions, focusConcepts, progressSummary }, null, 2);
+  return JSON.stringify({ _v: 3, _ts: Date.now(), sessions, courses, focusConcepts, progressSummary }, null, 2);
 }
 
 async function gistCreate() {
@@ -616,6 +697,13 @@ async function syncDown(silent = false) {
       sessions.sort((a, b) => new Date(b.date) - new Date(a.date));
       dbSet(DB_KEY, sessions);
     }
+    // Merge courses by id (additive)
+    if (Array.isArray(remote.courses)) {
+      const courseIds = new Set(courses.map(c => c.id));
+      let cAdded = 0;
+      remote.courses.forEach(c => { if (!courseIds.has(c.id)) { courses.push(c); cAdded++; } });
+      if (cAdded > 0) { dbSet(COURSES_KEY, courses); populateCourseSelect(); }
+    }
     // Use remote focus/summary only if local is empty
     if (!focusConcepts && remote.focusConcepts) {
       focusConcepts = remote.focusConcepts;
@@ -666,6 +754,30 @@ async function forcePull() {
   await syncDown(false);
 }
 
+// ─── COACH STYLE FILE ──────────────────────────────────────────────────────
+const COACH_STYLE_FALLBACK = `## Tono y voz
+- Hablás siempre en español rioplatense ("vos").
+- Cercano pero exigente, directo y sin relleno.
+
+## Cómo respondés
+- Respuestas cortas, con bullet points cuando ayude.
+- Siempre basadas en sus datos reales, nunca genéricas.
+- Una idea principal por respuesta.`;
+
+async function loadCoachStyle() {
+  try {
+    const res = await fetch(COACH_STYLE_URL, { cache: 'no-store' });
+    if (!res.ok) throw new Error('not found');
+    let txt = await res.text();
+    // Strip HTML comments and keep from the first markdown heading onward
+    txt = txt.replace(/<!--[\s\S]*?-->/g, '');
+    const i = txt.indexOf('## ');
+    coachStyle = (i >= 0 ? txt.slice(i) : txt).trim();
+  } catch {
+    coachStyle = COACH_STYLE_FALLBACK;
+  }
+}
+
 // ─── LOAD ────────────────────────────────────────────────────────────────────
 async function load() {
   sessions        = dbGet(DB_KEY)               || [];
@@ -674,6 +786,10 @@ async function load() {
   progressSummary = localStorage.getItem(PROGRESS_KEY)  || '';
   gistToken       = localStorage.getItem(GIST_TOKEN_KEY)|| '';
   gistId          = localStorage.getItem(GIST_ID_KEY)   || '';
+  courses         = dbGet(COURSES_KEY)                   || [];
+
+  await loadCoachStyle();
+  populateCourseSelect();
 
   if (apiKey)    document.getElementById('api-key-input').value    = apiKey;
   if (gistToken) document.getElementById('gist-token-input').value = gistToken;
@@ -719,6 +835,138 @@ function setType(type, btn) {
   document.getElementById('fields-clase').style.display = type === 'clase' ? 'block' : 'none';
 }
 
+// ─── COURSES ─────────────────────────────────────────────────────────────────
+function coursePar(c) { return c.holes.reduce((a, h) => a + h.par, 0); }
+
+function populateCourseSelect() {
+  const sel = document.getElementById('f-course');
+  if (!sel) return;
+  const current = sel.value;
+  const opts = courses.map(c => `<option value="${c.id}">${c.name} · Par ${coursePar(c)}</option>`).join('');
+  sel.innerHTML = `<option value="">— Elegí una cancha —</option>${opts}<option value="__new">➕ Nueva cancha</option>`;
+  if (current && (current === '__new' || courses.some(c => String(c.id) === current))) sel.value = current;
+}
+
+function onCourseSelect() {
+  const val = document.getElementById('f-course').value;
+  const builder = document.getElementById('course-builder');
+  const scorecard = document.getElementById('scorecard');
+  if (val === '__new') {
+    currentCourse = null;
+    scorecard.style.display = 'none';
+    builder.style.display = 'block';
+    renderCourseBuilderHoles();
+    return;
+  }
+  builder.style.display = 'none';
+  if (!val) { currentCourse = null; roundHoles = []; scorecard.style.display = 'none'; return; }
+  currentCourse = courses.find(c => String(c.id) === val) || null;
+  if (!currentCourse) { scorecard.style.display = 'none'; return; }
+  roundHoles = currentCourse.holes.map(h => ({ num: h.num, par: h.par, strokes: null, putts: null, gir: false, fir: h.par === 3 ? null : false }));
+  scorecard.style.display = 'block';
+  renderScorecard();
+}
+
+function renderCourseBuilderHoles() {
+  const n = parseInt(document.getElementById('cb-holes').value);
+  const grid = document.getElementById('cb-grid');
+  let html = '';
+  for (let i = 1; i <= n; i++) {
+    html += `<div class="cb-hole"><span class="cb-hole-label">H${i}</span><select id="cb-par-${i}"><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option></select></div>`;
+  }
+  grid.innerHTML = html;
+}
+
+function saveCourse() {
+  const name = document.getElementById('cb-name').value.trim();
+  if (!name) { toast('Poné un nombre para la cancha'); return; }
+  const n = parseInt(document.getElementById('cb-holes').value);
+  const holes = [];
+  for (let i = 1; i <= n; i++) holes.push({ num: i, par: parseInt(document.getElementById(`cb-par-${i}`).value) });
+  const course = { id: Date.now(), name, holes };
+  courses.push(course);
+  dbSet(COURSES_KEY, courses);
+  populateCourseSelect();
+  document.getElementById('f-course').value = String(course.id);
+  document.getElementById('cb-name').value = '';
+  onCourseSelect();
+  syncUp(true);
+  toast('Cancha guardada');
+}
+
+function cancelCourseBuilder() {
+  document.getElementById('course-builder').style.display = 'none';
+  document.getElementById('f-course').value = '';
+  currentCourse = null;
+}
+
+// ─── SCORECARD ENTRY ─────────────────────────────────────────────────────────
+function renderScorecard() {
+  const rows = roundHoles.map(h => {
+    const firBtn = h.fir === null
+      ? `<button class="hole-toggle" disabled>—</button>`
+      : `<button class="hole-toggle${h.fir ? ' on' : ''}" onclick="toggleHole(${h.num},'fir',this)">FIR</button>`;
+    return `<div class="hole-row">
+      <div class="hole-id">H${h.num}<span>Par ${h.par}</span></div>
+      <input class="hole-in" type="number" inputmode="numeric" min="1" max="15" placeholder="–" value="${h.strokes ?? ''}" oninput="setHole(${h.num},'strokes',this.value)">
+      <input class="hole-in" type="number" inputmode="numeric" min="0" max="10" placeholder="–" value="${h.putts ?? ''}" oninput="setHole(${h.num},'putts',this.value)">
+      <button class="hole-toggle${h.gir ? ' on' : ''}" onclick="toggleHole(${h.num},'gir',this)">GIR</button>
+      ${firBtn}
+    </div>`;
+  }).join('');
+  document.getElementById('scorecard-rows').innerHTML = rows;
+  renderScorecardTotals();
+}
+
+function setHole(num, field, value) {
+  const h = roundHoles.find(x => x.num === num);
+  if (!h) return;
+  const v = parseInt(value);
+  h[field] = isNaN(v) ? null : v;
+  renderScorecardTotals();
+}
+
+function toggleHole(num, field, btn) {
+  const h = roundHoles.find(x => x.num === num);
+  if (!h || h[field] === null) return;
+  h[field] = !h[field];
+  btn.classList.toggle('on', h[field]);
+  renderScorecardTotals();
+}
+
+function roundAggregates() {
+  const played   = roundHoles.filter(h => h.strokes != null);
+  const score    = played.reduce((a, h) => a + h.strokes, 0);
+  const parPlayed= played.reduce((a, h) => a + h.par, 0);
+  const puttRows = roundHoles.filter(h => h.putts != null);
+  const putts    = puttRows.length ? puttRows.reduce((a, h) => a + h.putts, 0) : null;
+  const fir      = roundHoles.filter(h => h.fir === true).length;
+  const firTotal = roundHoles.filter(h => h.fir !== null).length;
+  const gir      = roundHoles.filter(h => h.gir === true).length;
+  const girTotal = roundHoles.length;
+  return { played: played.length, score, parPlayed, putts, fir, firTotal, gir, girTotal };
+}
+
+function renderScorecardTotals() {
+  const a = roundAggregates();
+  const diff = a.played ? a.score - a.parPlayed : null;
+  const diffStr = diff === null ? '' : diff === 0 ? 'E' : (diff > 0 ? '+' + diff : diff);
+  document.getElementById('scorecard-totals').innerHTML = `
+    <div class="sct"><div class="sct-label">Score</div><div class="sct-val">${a.played ? a.score : '–'}${diffStr ? ` <sub>${diffStr}</sub>` : ''}</div></div>
+    <div class="sct"><div class="sct-label">Putts</div><div class="sct-val">${a.putts ?? '–'}</div></div>
+    <div class="sct"><div class="sct-label">GIR</div><div class="sct-val">${a.gir}<sub>/${a.girTotal}</sub></div></div>
+    <div class="sct"><div class="sct-label">FIR</div><div class="sct-val">${a.fir}<sub>/${a.firTotal}</sub></div></div>`;
+}
+
+function resetRoundEntry() {
+  currentCourse = null;
+  roundHoles = [];
+  const sel = document.getElementById('f-course');
+  if (sel) sel.value = '';
+  document.getElementById('course-builder').style.display = 'none';
+  document.getElementById('scorecard').style.display = 'none';
+}
+
 // ─── SAVE SESSION ────────────────────────────────────────────────────────────
 async function saveSession() {
   const date  = document.getElementById('f-date').value  || new Date().toISOString().split('T')[0];
@@ -728,12 +976,19 @@ async function saveSession() {
   const s = { id: Date.now(), type: currentType, date, place, notes, mental };
 
   if (currentType === 'ronda') {
-    s.score = parseInt(document.getElementById('f-score').value) || null;
-    s.putts = parseInt(document.getElementById('f-putts').value) || null;
-    s.fir   = parseInt(document.getElementById('f-fir').value);
-    s.gir   = parseInt(document.getElementById('f-gir').value);
-    if (isNaN(s.fir)) s.fir = null;
-    if (isNaN(s.gir)) s.gir = null;
+    if (!currentCourse) { toast('Elegí o creá una cancha primero'); return; }
+    const a = roundAggregates();
+    if (a.played === 0) { toast('Cargá los golpes de al menos un hoyo'); return; }
+    s.courseId   = currentCourse.id;
+    s.courseName = currentCourse.name;
+    s.coursePar  = coursePar(currentCourse);
+    s.holes      = roundHoles.map(h => ({ ...h }));
+    s.score      = a.score;
+    s.putts      = a.putts;
+    s.fir        = a.fir;
+    s.firTotal   = a.firTotal;
+    s.gir        = a.gir;
+    s.girTotal   = a.girTotal;
   } else {
     s.foco    = document.getElementById('f-foco').value.trim();
     s.duracion= parseInt(document.getElementById('f-dur').value) || null;
@@ -741,6 +996,7 @@ async function saveSession() {
   if (currentType === 'clase') {
     s.instructor = document.getElementById('f-instructor').value.trim();
     const conceptos = document.getElementById('f-conceptos').value.trim();
+    s.conceptos = conceptos;
     if (conceptos) { focusConcepts = conceptos; localStorage.setItem(FOCUS_KEY, focusConcepts); }
   }
 
@@ -757,11 +1013,12 @@ async function saveSession() {
 }
 
 function clearForm() {
-  ['f-score','f-putts','f-fir','f-gir','f-notes','f-conceptos','f-dur','f-place','f-instructor','f-foco'].forEach(id => {
+  ['f-notes','f-conceptos','f-dur','f-place','f-instructor','f-foco'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   document.getElementById('f-mental').value = '';
   document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  resetRoundEntry();
 }
 
 // ─── AI PROGRESS SUMMARY ─────────────────────────────────────────────────────
@@ -774,8 +1031,10 @@ function buildProgressPrompt() {
     data += 'RONDAS:\n';
     rondas.forEach(s => {
       data += `· ${s.date}: Score ${s.score}`;
-      if (s.fir !== null) data += `, FIR ${s.fir}/14`;
-      if (s.gir !== null) data += `, GIR ${s.gir}/18`;
+      if (s.coursePar) data += ` (par ${s.coursePar})`;
+      if (s.courseName) data += ` @ ${s.courseName}`;
+      if (s.fir != null) data += `, FIR ${s.fir}/${s.firTotal || 14}`;
+      if (s.gir != null) data += `, GIR ${s.gir}/${s.girTotal || 18}`;
       if (s.putts) data += `, Putts ${s.putts}`;
       if (s.mental) data += ` (${s.mental})`;
       if (s.notes) data += ` | "${s.notes.slice(0,80)}"`;
@@ -842,9 +1101,9 @@ function updateHome() {
     const avg = (last5.reduce((a, s) => a + s.score, 0) / last5.length).toFixed(1);
     document.getElementById('h-score').innerHTML = `${avg} <sub>promedio últimas ${last5.length}</sub>`;
     const firD = last5.filter(s => s.fir !== null);
-    document.getElementById('h-fir').textContent = firD.length ? Math.round(firD.reduce((a,s)=>a+(s.fir/14)*100,0)/firD.length)+'%' : '—';
+    document.getElementById('h-fir').textContent = firD.length ? Math.round(firD.reduce((a,s)=>a+(s.fir/(s.firTotal||14))*100,0)/firD.length)+'%' : '—';
     const girD = last5.filter(s => s.gir !== null);
-    document.getElementById('h-gir').textContent = girD.length ? Math.round(girD.reduce((a,s)=>a+(s.gir/18)*100,0)/girD.length)+'%' : '—';
+    document.getElementById('h-gir').textContent = girD.length ? Math.round(girD.reduce((a,s)=>a+(s.gir/(s.girTotal||18))*100,0)/girD.length)+'%' : '—';
     const pD = last5.filter(s => s.putts !== null);
     document.getElementById('h-putts').textContent = pD.length ? (pD.reduce((a,s)=>a+s.putts,0)/pD.length).toFixed(1) : '—';
   } else {
@@ -892,17 +1151,18 @@ function renderSessionCard(s, swipeable = false) {
   let kpis = '';
   if (s.type === 'ronda') {
     const parts = [
-      s.fir  !== null ? `<div class="sc-kpi"><strong>${s.fir}/14</strong>FIR</div>`  : '',
-      s.gir  !== null ? `<div class="sc-kpi"><strong>${s.gir}/18</strong>GIR</div>`  : '',
-      s.putts         ? `<div class="sc-kpi"><strong>${s.putts}</strong>Putts</div>` : ''
+      s.fir  != null ? `<div class="sc-kpi"><strong>${s.fir}/${s.firTotal||14}</strong>FIR</div>`  : '',
+      s.gir  != null ? `<div class="sc-kpi"><strong>${s.gir}/${s.girTotal||18}</strong>GIR</div>`  : '',
+      s.putts        ? `<div class="sc-kpi"><strong>${s.putts}</strong>Putts</div>` : ''
     ].filter(Boolean);
     if (parts.length) kpis = `<div class="sc-kpis">${parts.join('')}</div>`;
   }
   const right = s.score    ? `<div class="sc-score">${s.score}</div>`
               : s.duracion ? `<div style="font-size:12px;color:var(--text-tertiary);">${s.duracion} min</div>` : '';
   const foco  = s.foco ? `<div style="font-size:11px;color:var(--gold);margin-top:3px;">Foco: ${s.foco}</div>` : '';
-  const card  = `<div class="session-card" data-id="${s.id}"><div class="sc-top"><div><span class="sc-tag ${tagClass[s.type]}">${typeLabel[s.type]}</span><div class="sc-place">${fmtDate(s.date)}${s.place?' · '+s.place:''}${s.mental?' · '+s.mental:''}</div>${foco}</div>${right}</div>${kpis}${s.notes?`<div class="sc-note">${s.notes.slice(0,120)}${s.notes.length>120?'…':''}</div>`:''}</div>`;
-  if (!swipeable) return card;
+  const loc   = s.courseName || s.place;
+  const card  = `<div class="session-card" data-id="${s.id}"><div class="sc-top"><div><span class="sc-tag ${tagClass[s.type]}">${typeLabel[s.type]}</span><div class="sc-place">${fmtDate(s.date)}${loc?' · '+loc:''}${s.mental?' · '+s.mental:''}</div>${foco}</div>${right}</div>${kpis}${s.notes?`<div class="sc-note">${s.notes.slice(0,120)}${s.notes.length>120?'…':''}</div>`:''}</div>`;
+  if (!swipeable) return `<div onclick="openSessionDetail(${s.id})">${card}</div>`;
   return `<div class="swipe-wrapper" data-id="${s.id}"><div class="swipe-delete-bg"><i class="ti ti-trash"></i></div>${card}</div>`;
 }
 
@@ -969,13 +1229,16 @@ function attachSwipeHandlers() {
       deleteSession(id, wrapper);
     });
 
-    // Tap elsewhere snaps card back
+    // Tap snaps an open card back, otherwise opens the detail view
     card.addEventListener('click', () => {
       if (committed) {
         card.style.transition = 'transform 0.2s ease';
         card.style.transform  = 'translateX(0)';
         committed = false;
+        return;
       }
+      if (swiping) return;
+      openSessionDetail(parseInt(wrapper.dataset.id));
     });
   });
 }
@@ -1007,10 +1270,75 @@ function deleteSession(id, wrapperEl) {
   }, 280);
 }
 
+// ─── SESSION DETAIL ──────────────────────────────────────────────────────────
+function esc(s) { return String(s).replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c])); }
+function dtRow(label, val) { return (val == null || val === '') ? '' : `<div class="dt-row"><span class="dt-label">${label}</span><span class="dt-val">${val}</span></div>`; }
+
+function renderDetailHoles(holes) {
+  const head = `<div class="ro-head"><span>Hoyo</span><span>Par</span><span>Golpes</span><span>Putts</span><span>GIR</span><span>FIR</span></div>`;
+  const rows = holes.map(h => {
+    const gir = h.gir ? `<span class="mark-ok">✓</span>` : `<span class="mark-no">·</span>`;
+    const fir = h.fir === null || h.fir === undefined ? `<span class="mark-no">–</span>` : h.fir ? `<span class="mark-ok">✓</span>` : `<span class="mark-no">·</span>`;
+    return `<div class="ro-row"><span>H${h.num}</span><span>${h.par}</span><span>${h.strokes ?? '–'}</span><span>${h.putts ?? '–'}</span>${gir}${fir}</div>`;
+  }).join('');
+  return `<div style="margin-top:8px;">${head}${rows}</div>`;
+}
+
+function openSessionDetail(id) {
+  const s = sessions.find(x => x.id === id);
+  if (!s) return;
+  const typeLabel = { ronda: 'Ronda completa', practica: 'Práctica / range', clase: 'Clase con instructor' };
+  document.getElementById('detail-title').textContent = typeLabel[s.type] || 'Sesión';
+  let body = '';
+  body += dtRow('Fecha', fmtDate(s.date));
+
+  if (s.type === 'ronda') {
+    let parPlayed = s.coursePar;
+    if (s.holes) parPlayed = s.holes.filter(h => h.strokes != null).reduce((a, h) => a + h.par, 0);
+    const diff = (s.score != null && parPlayed != null) ? s.score - parPlayed : null;
+    const diffStr = diff == null ? '' : diff === 0 ? ' (E)' : diff > 0 ? ` (+${diff})` : ` (${diff})`;
+    body += dtRow('Cancha', s.courseName ? esc(s.courseName) : (s.place ? esc(s.place) : ''));
+    if (s.coursePar) body += dtRow('Par de cancha', s.coursePar);
+    body += dtRow('Score', s.score != null ? s.score + diffStr : '');
+    body += dtRow('Putts', s.putts);
+    if (s.fir != null) body += dtRow('Fairways', `${s.fir}/${s.firTotal || 14}`);
+    if (s.gir != null) body += dtRow('GIR', `${s.gir}/${s.girTotal || 18}`);
+    body += dtRow('Estado mental', s.mental);
+    if (s.holes && s.holes.length) body += renderDetailHoles(s.holes);
+  } else if (s.type === 'clase') {
+    body += dtRow('Lugar', s.place ? esc(s.place) : '');
+    body += dtRow('Instructor', s.instructor ? esc(s.instructor) : '');
+    body += dtRow('Estado mental', s.mental);
+  } else {
+    body += dtRow('Lugar', s.place ? esc(s.place) : '');
+    body += dtRow('Foco', s.foco ? esc(s.foco) : '');
+    body += dtRow('Duración', s.duracion ? s.duracion + ' min' : '');
+    body += dtRow('Estado mental', s.mental);
+  }
+
+  if (s.type === 'clase') {
+    // Older clases didn't store conceptos per-session; fall back to global focus for the latest one.
+    const latestClase = sessions.filter(x => x.type === 'clase')[0];
+    const conceptos = s.conceptos || ((latestClase && latestClase.id === s.id) ? focusConcepts : '');
+    if (conceptos) body += `<div class="sec-label" style="margin-top:14px;">Conceptos</div><div class="dt-notes">${esc(conceptos)}</div>`;
+  }
+  if (s.notes) body += `<div class="sec-label" style="margin-top:14px;">Notas</div><div class="dt-notes">${esc(s.notes)}</div>`;
+
+  document.getElementById('detail-body').innerHTML = body;
+  document.getElementById('detail-modal').classList.add('show');
+}
+
+function closeDetail(e) {
+  if (!e || e.target === document.getElementById('detail-modal')) {
+    document.getElementById('detail-modal').classList.remove('show');
+  }
+}
+
 // ─── COACH ───────────────────────────────────────────────────────────────────
 function buildSystemPrompt() {
   let p = `Sos Caddie, coach de golf personal. Experto en técnica, juego mental y estrategia.\n\n`;
   p += PLAYER_PROFILE + '\n\n';
+  if (coachStyle) p += `ESTILO E INTERACCIÓN (cómo debés hablar):\n${coachStyle}\n\n`;
   if (progressSummary) p += `RESUMEN DE PROGRESO (análisis automático de todos los datos):\n${progressSummary}\n\n`;
   if (focusConcepts)   p += `CONCEPTOS EN FOCO (última clase con instructor):\n${focusConcepts}\n\n`;
   const ultimasRondas = sessions.filter(s => s.type === 'ronda' && s.score).slice(0, 5);
@@ -1018,8 +1346,9 @@ function buildSystemPrompt() {
     p += `ÚLTIMAS 5 RONDAS:\n`;
     ultimasRondas.forEach(s => {
       p += `· ${s.date}: Score ${s.score}`;
-      if (s.fir !== null) p += `, FIR ${s.fir}/14`;
-      if (s.gir !== null) p += `, GIR ${s.gir}/18`;
+      if (s.coursePar) p += ` (par ${s.coursePar})`;
+      if (s.fir != null) p += `, FIR ${s.fir}/${s.firTotal || 14}`;
+      if (s.gir != null) p += `, GIR ${s.gir}/${s.girTotal || 18}`;
       if (s.putts) p += `, Putts ${s.putts}`;
       if (s.mental) p += ` (${s.mental})`;
       if (s.notes) p += ` | "${s.notes.slice(0,60)}"`;
@@ -1145,7 +1474,7 @@ function showSettings()   { document.getElementById('settings-modal').classList.
 function closeSettings(e) { if (!e || e.target === document.getElementById('settings-modal')) document.getElementById('settings-modal').classList.remove('show'); }
 function saveApiKey()     { apiKey = document.getElementById('api-key-input').value.trim(); localStorage.setItem(API_KEY_STORE, apiKey); closeSettings(); toast('API key guardada'); }
 function exportData() {
-  const blob = new Blob([JSON.stringify({ sessions, focusConcepts, progressSummary }, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ sessions, courses, focusConcepts, progressSummary }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = `caddie-export-${new Date().toISOString().split('T')[0]}.json`; a.click();
 }
