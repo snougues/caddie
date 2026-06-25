@@ -191,9 +191,11 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 .empty-text { font-size: 14px; color: var(--text-tertiary); line-height: 1.5; }
 
 /* ── COURSE BUILDER ── */
-.cb-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 4px; }
-.cb-hole { display: flex; align-items: center; gap: 6px; }
-.cb-hole-label { font-size: 12px; color: var(--text-secondary); width: 26px; flex-shrink: 0; }
+.cb-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+.cb-hole { display: grid; grid-template-columns: 30px 1fr 1fr; gap: 8px; align-items: center; }
+.cb-hole-label { font-size: 12px; color: var(--green); font-weight: 500; }
+.cb-hole .cb-field { display: grid; grid-template-columns: 30px 1fr; gap: 6px; align-items: center; }
+.cb-hole .cb-field-label { font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-tertiary); }
 .cb-hole select { padding: 7px 4px; font-size: 14px; text-align: center; }
 
 /* ── SCORECARD ── */
@@ -252,18 +254,23 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
           <button class="icon-btn" onclick="showSettings()" aria-label="Configuración"><i class="ti ti-settings"></i></button>
         </div>
       </div>
-      <div class="header-kpi-label">Score promedio</div>
-      <div class="header-score" id="h-score">— <sub>sin rondas aún</sub></div>
+      <div class="header-kpi-label">Handicap index</div>
+      <div class="header-score" id="h-score">— <sub>sin tarjetas presentadas</sub></div>
       <div class="header-kpis">
+        <div class="header-kpi"><div class="header-kpi-label2">Score</div><div class="header-kpi-val" id="h-avg">—</div></div>
         <div class="header-kpi"><div class="header-kpi-label2">FIR</div><div class="header-kpi-val" id="h-fir">—</div></div>
         <div class="header-kpi"><div class="header-kpi-label2">GIR</div><div class="header-kpi-val" id="h-gir">—</div></div>
         <div class="header-kpi"><div class="header-kpi-label2">Putts</div><div class="header-kpi-val" id="h-putts">—</div></div>
       </div>
     </div>
     <div class="screen-body">
-      <div class="sec-label">Evolución de score</div>
+      <div class="sec-label">Evolución</div>
       <div class="card">
-        <div class="chart-wrap"><canvas id="scoreChart" role="img" aria-label="Evolución del score">Historial de scores.</canvas></div>
+        <div class="type-selector" style="margin-bottom:12px;">
+          <button class="type-btn active" id="chart-score" onclick="setHomeChart('score',this)">Score</button>
+          <button class="type-btn" id="chart-hi" onclick="setHomeChart('hi',this)">Handicap</button>
+        </div>
+        <div class="chart-wrap"><canvas id="homeChart" role="img" aria-label="Evolución">Historial.</canvas></div>
         <div id="no-chart-msg" style="text-align:center;padding:24px 0;font-size:13px;color:var(--text-tertiary);">Registrá al menos 2 rondas para ver el gráfico.</div>
       </div>
       <div class="sec-label">Progreso actual</div>
@@ -283,16 +290,16 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 
   <!-- REGISTRAR -->
   <div class="screen" id="screen-log">
-    <div class="plain-header"><div class="plain-header-title">Registrar sesión</div></div>
+    <div class="plain-header"><div class="plain-header-title" id="log-title">Registrar sesión</div></div>
     <div class="screen-body">
-      <div class="type-selector">
+      <div class="type-selector" id="log-type-selector">
         <button class="type-btn active" onclick="setType('ronda',this)">Ronda</button>
         <button class="type-btn" onclick="setType('practica',this)">Práctica</button>
         <button class="type-btn" onclick="setType('clase',this)">Clase</button>
       </div>
       <div class="form-row" style="margin-bottom:14px;">
         <div class="form-group" style="margin:0;"><label class="form-label">Fecha</label><input type="date" id="f-date"></div>
-        <div class="form-group" style="margin:0;"><label class="form-label">Lugar</label><input type="text" id="f-place" placeholder="Club / cancha"></div>
+        <div class="form-group" id="place-group" style="margin:0;"><label class="form-label">Lugar</label><input type="text" id="f-place" placeholder="Club / cancha"></div>
       </div>
       <div id="fields-ronda">
         <div class="form-group">
@@ -301,6 +308,9 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
             <option value="">— Elegí una cancha —</option>
             <option value="__new">➕ Nueva cancha</option>
           </select>
+        </div>
+        <div id="course-edit-row" style="display:none;margin-top:-6px;margin-bottom:14px;text-align:right;">
+          <button class="btn-ghost" onclick="editCourse()">Editar rating / slope / SI de esta cancha</button>
         </div>
 
         <!-- COURSE BUILDER -->
@@ -314,10 +324,14 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
               </select>
             </div>
           </div>
-          <div class="sec-label">Par de cada hoyo</div>
+          <div class="form-row" style="margin-bottom:14px;">
+            <div class="form-group" style="margin:0;"><label class="form-label">Calificación (rating)</label><input type="number" id="cb-rating" step="0.1" inputmode="decimal" placeholder="70.5"></div>
+            <div class="form-group" style="margin:0;"><label class="form-label">Slope</label><input type="number" id="cb-slope" inputmode="numeric" placeholder="125" min="55" max="155"></div>
+          </div>
+          <div class="sec-label">Par y handicap (SI) de cada hoyo</div>
           <div id="cb-grid" class="cb-grid"></div>
           <div style="display:flex;gap:8px;margin:14px 0 4px;">
-            <button class="btn-primary" style="font-size:13px;padding:11px;flex:1;" onclick="saveCourse()">Guardar cancha</button>
+            <button class="btn-primary" id="cb-save-btn" style="font-size:13px;padding:11px;flex:1;" onclick="saveCourse()">Guardar cancha</button>
             <button class="btn-ghost" onclick="cancelCourseBuilder()">Cancelar</button>
           </div>
         </div>
@@ -329,6 +343,18 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
             <span>Hoyo</span><span>Golpes</span><span>Putts</span><span>GIR</span><span>FIR</span>
           </div>
           <div id="scorecard-rows"></div>
+
+          <div class="form-group" style="margin-top:16px;">
+            <label class="form-label">Tipo de tarjeta</label>
+            <div class="type-selector" style="margin-bottom:0;">
+              <button type="button" class="type-btn" id="pres-practice" onclick="setPresented(false)">Práctica</button>
+              <button type="button" class="type-btn" id="pres-official" onclick="setPresented(true)">Presentada (cuenta hcp)</button>
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom:0;">
+            <div class="form-group" style="margin:0;"><label class="form-label">Handicap index</label><input type="number" id="f-hindex" step="0.1" inputmode="decimal" placeholder="13.0"></div>
+            <div class="form-group" style="margin:0;"><label class="form-label">Handicap de juego</label><input type="number" id="f-phcp" inputmode="numeric" placeholder="14"></div>
+          </div>
         </div>
       </div>
       <div id="fields-other" style="display:none;">
@@ -351,7 +377,7 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
           <option value="frustrado">Frustrado</option>
         </select>
       </div>
-      <button class="btn-primary" onclick="saveSession()">Guardar sesión</button>
+      <button class="btn-primary" id="save-btn" onclick="saveSession()">Guardar sesión</button>
       <div style="height:20px;"></div>
     </div>
   </div>
@@ -478,7 +504,14 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
 
     <!-- DATOS -->
     <div style="margin-top:12px;" class="card">
-      <div class="settings-row" style="padding-top:0;">
+      <div class="settings-row" style="padding-top:0;display:block;">
+        <div style="margin-bottom:10px;"><div class="settings-label">Métricas del inicio</div><div class="settings-sub">Rango de las estadísticas y gráficos</div></div>
+        <div class="type-selector" style="margin-bottom:0;">
+          <button class="type-btn" id="range-all" onclick="setMetricsRange('all')">Histórico</button>
+          <button class="type-btn" id="range-year" onclick="setMetricsRange('year')">Este año</button>
+        </div>
+      </div>
+      <div class="settings-row">
         <div><div class="settings-label">Regenerar resumen</div><div class="settings-sub">Actualiza el análisis de progreso</div></div>
         <button class="btn-ghost" onclick="forceRegenerateProgress()">Regenerar</button>
       </div>
@@ -500,7 +533,10 @@ textarea { resize: none; min-height: 80px; line-height: 1.5; }
     <div class="modal-handle"></div>
     <div class="modal-title" id="detail-title">Sesión</div>
     <div id="detail-body"></div>
-    <button class="btn-ghost" style="width:100%;margin-top:16px;" onclick="closeDetail()">Cerrar</button>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button class="btn-primary" style="flex:1;font-size:14px;padding:12px;" onclick="editSession(detailId)">Editar</button>
+      <button class="btn-ghost" onclick="closeDetail()">Cerrar</button>
+    </div>
   </div>
 </div>
 
@@ -517,6 +553,7 @@ const GIST_ID_KEY    = 'caddie_gist_id_v1';
 const GIST_FILENAME  = 'caddie-data.json';
 const CHAT_KEY       = 'caddie_chat_v1';
 const COURSES_KEY    = 'caddie_courses_v1';
+const METRICS_RANGE_KEY = 'caddie_metricsrange_v1';
 const COACH_STYLE_URL= 'coach-style.md';
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
@@ -527,13 +564,18 @@ let progressSummary = '';
 let currentFilter   = 'all';
 let currentType     = 'ronda';
 let chatHistory     = [];
-let scoreChartInstance = null;
+let homeChartInstance = null;
 let gistToken       = '';
 let gistId          = '';
-let courses         = [];     // saved courses {id, name, par, holes:[{num,par}]}
+let courses         = [];     // saved courses {id, name, rating, slope, holes:[{num,par,si}]}
 let coachStyle      = '';     // loaded from coach-style.md (how the coach talks)
 let currentCourse   = null;   // course selected for the round being entered
 let roundHoles      = [];     // working per-hole data during round entry
+let roundPresented  = false;  // whether the round being entered is a presented (official) card
+let editingId       = null;   // id of the session being edited, or null for a new one
+let editingCourseId = null;   // id of the course being edited in the builder, or null for a new one
+let homeChartMode   = 'score';// 'score' | 'hi' — which series the home chart shows
+let metricsRange    = 'all';  // 'all' | 'year' — range filter for home metrics
 
 // ─── PLAYER PROFILE ─────────────────────────────────────────────────────────
 const PLAYER_PROFILE = `PERFIL DEL JUGADOR (siempre presente, no cambia):
@@ -621,7 +663,7 @@ function gistHeaders() {
 }
 
 function buildPayload() {
-  return JSON.stringify({ _v: 3, _ts: Date.now(), sessions, courses, focusConcepts, progressSummary }, null, 2);
+  return JSON.stringify({ _v: 4, _ts: Date.now(), sessions, courses, focusConcepts, progressSummary }, null, 2);
 }
 
 async function gistCreate() {
@@ -742,6 +784,19 @@ async function saveGistConfig() {
   }
 }
 
+function syncMetricsRangeUI() {
+  const a = document.getElementById('range-all'), y = document.getElementById('range-year');
+  if (a) a.classList.toggle('active', metricsRange === 'all');
+  if (y) y.classList.toggle('active', metricsRange === 'year');
+}
+
+function setMetricsRange(val) {
+  metricsRange = val;
+  localStorage.setItem(METRICS_RANGE_KEY, val);
+  syncMetricsRangeUI();
+  updateHome();
+}
+
 async function forcePush() {
   if (!gistToken) { toast('Configurá el token primero'); return; }
   closeSettings();
@@ -787,8 +842,10 @@ async function load() {
   gistToken       = localStorage.getItem(GIST_TOKEN_KEY)|| '';
   gistId          = localStorage.getItem(GIST_ID_KEY)   || '';
   courses         = dbGet(COURSES_KEY)                   || [];
+  metricsRange    = localStorage.getItem(METRICS_RANGE_KEY) || 'all';
 
   await loadCoachStyle();
+  syncMetricsRangeUI();
   populateCourseSelect();
 
   if (apiKey)    document.getElementById('api-key-input').value    = apiKey;
@@ -828,11 +885,20 @@ function navigate(id, btn) {
 
 function setType(type, btn) {
   currentType = type;
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  const topRow = document.getElementById('log-type-selector');
+  topRow.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  const idx = { ronda: 0, practica: 1, clase: 2 }[type];
+  (btn || topRow.children[idx])?.classList.add('active');
   document.getElementById('fields-ronda').style.display = type === 'ronda' ? 'block' : 'none';
   document.getElementById('fields-other').style.display = type !== 'ronda' ? 'block' : 'none';
   document.getElementById('fields-clase').style.display = type === 'clase' ? 'block' : 'none';
+  document.getElementById('place-group').style.display = type === 'ronda' ? 'none' : 'block';
+}
+
+function setPresented(val) {
+  roundPresented = val;
+  document.getElementById('pres-official').classList.toggle('active', val);
+  document.getElementById('pres-practice').classList.toggle('active', !val);
 }
 
 // ─── COURSES ─────────────────────────────────────────────────────────────────
@@ -851,9 +917,13 @@ function onCourseSelect() {
   const val = document.getElementById('f-course').value;
   const builder = document.getElementById('course-builder');
   const scorecard = document.getElementById('scorecard');
+  const editRow = document.getElementById('course-edit-row');
+  editRow.style.display = 'none';
   if (val === '__new') {
+    editingCourseId = null;
     currentCourse = null;
     scorecard.style.display = 'none';
+    document.getElementById('cb-save-btn').textContent = 'Guardar cancha';
     builder.style.display = 'block';
     renderCourseBuilderHoles();
     return;
@@ -862,17 +932,44 @@ function onCourseSelect() {
   if (!val) { currentCourse = null; roundHoles = []; scorecard.style.display = 'none'; return; }
   currentCourse = courses.find(c => String(c.id) === val) || null;
   if (!currentCourse) { scorecard.style.display = 'none'; return; }
-  roundHoles = currentCourse.holes.map(h => ({ num: h.num, par: h.par, strokes: null, putts: null, gir: false, fir: h.par === 3 ? null : false }));
+  editRow.style.display = 'block';
+  roundHoles = currentCourse.holes.map(h => ({ num: h.num, par: h.par, si: h.si ?? null, strokes: null, putts: null, gir: false, fir: h.par === 3 ? null : false }));
   scorecard.style.display = 'block';
   renderScorecard();
 }
 
-function renderCourseBuilderHoles() {
+// Open the builder pre-filled to edit the currently selected course.
+function editCourse() {
+  if (!currentCourse) return;
+  editingCourseId = currentCourse.id;
+  document.getElementById('cb-name').value   = currentCourse.name || '';
+  document.getElementById('cb-holes').value  = String(currentCourse.holes.length);
+  document.getElementById('cb-rating').value = currentCourse.rating ?? '';
+  document.getElementById('cb-slope').value  = currentCourse.slope ?? '';
+  renderCourseBuilderHoles(currentCourse.holes);
+  document.getElementById('cb-save-btn').textContent = 'Guardar cambios';
+  document.getElementById('course-edit-row').style.display = 'none';
+  document.getElementById('scorecard').style.display = 'none';
+  document.getElementById('course-builder').style.display = 'block';
+}
+
+function renderCourseBuilderHoles(presetHoles) {
   const n = parseInt(document.getElementById('cb-holes').value);
   const grid = document.getElementById('cb-grid');
   let html = '';
   for (let i = 1; i <= n; i++) {
-    html += `<div class="cb-hole"><span class="cb-hole-label">H${i}</span><select id="cb-par-${i}"><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option></select></div>`;
+    const preset = presetHoles && presetHoles.find(h => h.num === i);
+    const parVal = preset ? preset.par : 4;
+    const siVal  = preset && preset.si ? preset.si : i;
+    let parOpts = '';
+    [3, 4, 5].forEach(p => { parOpts += `<option value="${p}"${p === parVal ? ' selected' : ''}>${p}</option>`; });
+    let siOpts = '';
+    for (let s = 1; s <= n; s++) siOpts += `<option value="${s}"${s === siVal ? ' selected' : ''}>${s}</option>`;
+    html += `<div class="cb-hole">
+      <span class="cb-hole-label">H${i}</span>
+      <div class="cb-field"><span class="cb-field-label">Par</span><select id="cb-par-${i}">${parOpts}</select></div>
+      <div class="cb-field"><span class="cb-field-label">SI</span><select id="cb-si-${i}">${siOpts}</select></div>
+    </div>`;
   }
   grid.innerHTML = html;
 }
@@ -881,11 +978,27 @@ function saveCourse() {
   const name = document.getElementById('cb-name').value.trim();
   if (!name) { toast('Poné un nombre para la cancha'); return; }
   const n = parseInt(document.getElementById('cb-holes').value);
+  const rating = parseFloat(document.getElementById('cb-rating').value);
+  const slope  = parseInt(document.getElementById('cb-slope').value);
   const holes = [];
-  for (let i = 1; i <= n; i++) holes.push({ num: i, par: parseInt(document.getElementById(`cb-par-${i}`).value) });
-  const course = { id: Date.now(), name, holes };
-  courses.push(course);
+  const siSeen = new Set();
+  for (let i = 1; i <= n; i++) {
+    const si = parseInt(document.getElementById(`cb-si-${i}`).value);
+    siSeen.add(si);
+    holes.push({ num: i, par: parseInt(document.getElementById(`cb-par-${i}`).value), si });
+  }
+  if (siSeen.size !== n) toast('Ojo: hay handicaps (SI) repetidos');
+  let course;
+  if (editingCourseId) {
+    course = courses.find(c => c.id === editingCourseId);
+    if (course) { course.name = name; course.rating = isNaN(rating) ? null : rating; course.slope = isNaN(slope) ? null : slope; course.holes = holes; }
+    editingCourseId = null;
+  } else {
+    course = { id: Date.now(), name, rating: isNaN(rating) ? null : rating, slope: isNaN(slope) ? null : slope, holes };
+    courses.push(course);
+  }
   dbSet(COURSES_KEY, courses);
+  document.getElementById('cb-save-btn').textContent = 'Guardar cancha';
   populateCourseSelect();
   document.getElementById('f-course').value = String(course.id);
   document.getElementById('cb-name').value = '';
@@ -896,8 +1009,18 @@ function saveCourse() {
 
 function cancelCourseBuilder() {
   document.getElementById('course-builder').style.display = 'none';
-  document.getElementById('f-course').value = '';
-  currentCourse = null;
+  document.getElementById('cb-save-btn').textContent = 'Guardar cancha';
+  document.getElementById('cb-name').value = '';
+  const wasEditing = editingCourseId;
+  editingCourseId = null;
+  if (wasEditing) {
+    // Return to the course we were editing
+    document.getElementById('f-course').value = String(wasEditing);
+    onCourseSelect();
+  } else {
+    document.getElementById('f-course').value = '';
+    currentCourse = null;
+  }
 }
 
 // ─── SCORECARD ENTRY ─────────────────────────────────────────────────────────
@@ -961,19 +1084,117 @@ function renderScorecardTotals() {
 function resetRoundEntry() {
   currentCourse = null;
   roundHoles = [];
+  editingCourseId = null;
   const sel = document.getElementById('f-course');
   if (sel) sel.value = '';
   document.getElementById('course-builder').style.display = 'none';
   document.getElementById('scorecard').style.display = 'none';
+  document.getElementById('course-edit-row').style.display = 'none';
+  document.getElementById('cb-save-btn').textContent = 'Guardar cancha';
+}
+
+// ─── HANDICAP (WHS / AAG) ────────────────────────────────────────────────────
+// Course handicap used to allocate net-double-bogey strokes per hole.
+// Priority: starter-given playing handicap → derived from recorded index → 0.
+function courseHandicapFor(s) {
+  if (s.playingHandicap != null && !isNaN(s.playingHandicap)) return Math.round(s.playingHandicap);
+  if (s.handicapIndex != null && !isNaN(s.handicapIndex) && s.slope && s.rating != null && s.coursePar != null) {
+    return Math.round((s.slope / 113) * s.handicapIndex + (s.rating - s.coursePar));
+  }
+  return 0;
+}
+
+// Strokes received on a hole of stroke index `si` given course handicap `ch`.
+function holeStrokesReceived(si, ch, holeCount) {
+  if (!si || ch <= 0) return 0;
+  return Math.floor(ch / holeCount) + (si <= (ch % holeCount) ? 1 : 0);
+}
+
+// Adjusted gross: each played hole capped at net double bogey (par + 2 + strokes).
+function adjustedGross(s) {
+  if (!Array.isArray(s.holes)) return s.score ?? null;
+  const ch = courseHandicapFor(s);
+  const n = s.holes.length;
+  let total = 0;
+  for (const h of s.holes) {
+    if (h.strokes == null) continue;
+    const cap = h.par + 2 + holeStrokesReceived(h.si, ch, n);
+    total += Math.min(h.strokes, cap);
+  }
+  return total;
+}
+
+// A round qualifies for the index only if presented, 18 holes all played, with rating+slope.
+function isPresentedRound(s) {
+  return s.type === 'ronda' && s.presented === true && s.slope && s.rating != null
+      && Array.isArray(s.holes) && s.holes.length >= 18
+      && s.holes.every(h => h.strokes != null);
+}
+
+// Score differential. PCC assumed 0 (cannot be derived solo).
+function roundDifferential(s) {
+  if (!isPresentedRound(s)) return null;
+  const ags = adjustedGross(s);
+  if (ags == null) return null;
+  return Math.round((113 / s.slope) * (ags - s.rating) * 10) / 10;
+}
+
+// AAG scaling table: how many lowest differentials to average + adjustment, by count.
+function indexParams(n) {
+  if (n <= 3)  return { k: 1, adj: -2.0 };
+  if (n === 4) return { k: 1, adj: -1.0 };
+  if (n === 5) return { k: 1, adj: 0 };
+  if (n === 6) return { k: 2, adj: -1.0 };
+  if (n <= 8)  return { k: 2, adj: 0 };
+  if (n <= 11) return { k: 3, adj: 0 };
+  if (n <= 14) return { k: 4, adj: 0 };
+  if (n <= 16) return { k: 5, adj: 0 };
+  if (n <= 18) return { k: 6, adj: 0 };
+  if (n === 19) return { k: 7, adj: 0 };
+  return { k: 8, adj: 0 };
+}
+
+// Index from a chronological list of differentials (uses most recent ≤20).
+function computeIndexFrom(diffs) {
+  if (!diffs || diffs.length < 3) return null;
+  const last20 = diffs.slice(-20);
+  const { k, adj } = indexParams(last20.length);
+  const lowest = [...last20].sort((a, b) => a - b).slice(0, k);
+  const avg = lowest.reduce((a, b) => a + b, 0) / k;
+  return Math.round(Math.min(54.0, avg + adj) * 10) / 10;
+}
+
+function presentedDifferentials(list) {
+  return (list || sessions)
+    .filter(isPresentedRound)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .map(s => ({ date: s.date, diff: roundDifferential(s) }))
+    .filter(d => d.diff != null);
+}
+
+function handicapIndexNow(list) {
+  return computeIndexFrom(presentedDifferentials(list).map(d => d.diff));
+}
+
+// Chronological [{date, index}] recomputed after each qualifying round, for the chart.
+function handicapIndexHistory(list) {
+  const diffs = [];
+  const out = [];
+  presentedDifferentials(list).forEach(d => {
+    diffs.push(d.diff);
+    const idx = computeIndexFrom(diffs);
+    if (idx != null) out.push({ date: d.date, index: idx });
+  });
+  return out;
 }
 
 // ─── SAVE SESSION ────────────────────────────────────────────────────────────
 async function saveSession() {
   const date  = document.getElementById('f-date').value  || new Date().toISOString().split('T')[0];
-  const place = document.getElementById('f-place').value.trim();
+  const place = currentType === 'ronda' ? '' : document.getElementById('f-place').value.trim();
   const notes = document.getElementById('f-notes').value.trim();
   const mental= document.getElementById('f-mental').value;
-  const s = { id: Date.now(), type: currentType, date, place, notes, mental };
+  const s = { id: editingId || Date.now(), type: currentType, date, place, notes, mental };
 
   if (currentType === 'ronda') {
     if (!currentCourse) { toast('Elegí o creá una cancha primero'); return; }
@@ -982,6 +1203,8 @@ async function saveSession() {
     s.courseId   = currentCourse.id;
     s.courseName = currentCourse.name;
     s.coursePar  = coursePar(currentCourse);
+    s.rating     = currentCourse.rating ?? null;
+    s.slope      = currentCourse.slope ?? null;
     s.holes      = roundHoles.map(h => ({ ...h }));
     s.score      = a.score;
     s.putts      = a.putts;
@@ -989,6 +1212,11 @@ async function saveSession() {
     s.firTotal   = a.firTotal;
     s.gir        = a.gir;
     s.girTotal   = a.girTotal;
+    s.presented  = roundPresented;
+    const hidx   = parseFloat(document.getElementById('f-hindex').value);
+    const phcp   = parseInt(document.getElementById('f-phcp').value);
+    s.handicapIndex   = isNaN(hidx) ? null : hidx;
+    s.playingHandicap = isNaN(phcp) ? null : phcp;
   } else {
     s.foco    = document.getElementById('f-foco').value.trim();
     s.duracion= parseInt(document.getElementById('f-dur').value) || null;
@@ -1000,7 +1228,13 @@ async function saveSession() {
     if (conceptos) { focusConcepts = conceptos; localStorage.setItem(FOCUS_KEY, focusConcepts); }
   }
 
-  sessions.unshift(s);
+  if (editingId) {
+    const i = sessions.findIndex(x => x.id === editingId);
+    if (i >= 0) sessions[i] = s; else sessions.unshift(s);
+    sessions.sort((a, b) => new Date(b.date) - new Date(a.date));
+  } else {
+    sessions.unshift(s);
+  }
   dbSet(DB_KEY, sessions);
   clearForm();
   navigate('home', document.querySelector('.nav-item'));
@@ -1013,11 +1247,15 @@ async function saveSession() {
 }
 
 function clearForm() {
-  ['f-notes','f-conceptos','f-dur','f-place','f-instructor','f-foco'].forEach(id => {
+  ['f-notes','f-conceptos','f-dur','f-place','f-instructor','f-foco','f-hindex','f-phcp'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   document.getElementById('f-mental').value = '';
   document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  editingId = null;
+  document.getElementById('log-title').textContent = 'Registrar sesión';
+  document.getElementById('save-btn').textContent = 'Guardar sesión';
+  setPresented(false);
   resetRoundEntry();
 }
 
@@ -1094,21 +1332,36 @@ async function forceRegenerateProgress() {
 }
 
 // ─── HOME / CHART ────────────────────────────────────────────────────────────
+// Filter a session list by the selected metrics range ('all' | current year).
+function rangeFilter(list) {
+  if (metricsRange !== 'year') return list;
+  const y = new Date().getFullYear();
+  return list.filter(s => new Date(s.date + 'T12:00:00').getFullYear() === y);
+}
+
 function updateHome() {
-  const rondas = sessions.filter(s => s.type === 'ronda' && s.score);
+  const scoped = rangeFilter(sessions);
+  const rondas = scoped.filter(s => s.type === 'ronda' && s.score);
   const last5  = rondas.slice(0, 5);
+
+  // Big number: computed WHS handicap index
+  const hi = handicapIndexNow(scoped);
+  document.getElementById('h-score').innerHTML = hi != null
+    ? `${hi.toFixed(1)} <sub>${metricsRange === 'year' ? 'este año' : 'index actual'}</sub>`
+    : `— <sub>sin tarjetas presentadas</sub>`;
+
+  // Secondary KPIs (last 5 rondas in range)
   if (last5.length > 0) {
     const avg = (last5.reduce((a, s) => a + s.score, 0) / last5.length).toFixed(1);
-    document.getElementById('h-score').innerHTML = `${avg} <sub>promedio últimas ${last5.length}</sub>`;
-    const firD = last5.filter(s => s.fir !== null);
+    document.getElementById('h-avg').textContent = avg;
+    const firD = last5.filter(s => s.fir != null);
     document.getElementById('h-fir').textContent = firD.length ? Math.round(firD.reduce((a,s)=>a+(s.fir/(s.firTotal||14))*100,0)/firD.length)+'%' : '—';
-    const girD = last5.filter(s => s.gir !== null);
+    const girD = last5.filter(s => s.gir != null);
     document.getElementById('h-gir').textContent = girD.length ? Math.round(girD.reduce((a,s)=>a+(s.gir/(s.girTotal||18))*100,0)/girD.length)+'%' : '—';
-    const pD = last5.filter(s => s.putts !== null);
+    const pD = last5.filter(s => s.putts != null);
     document.getElementById('h-putts').textContent = pD.length ? (pD.reduce((a,s)=>a+s.putts,0)/pD.length).toFixed(1) : '—';
   } else {
-    document.getElementById('h-score').innerHTML = `— <sub>sin rondas aún</sub>`;
-    ['h-fir','h-gir','h-putts'].forEach(id => document.getElementById(id).textContent = '—');
+    ['h-avg','h-fir','h-gir','h-putts'].forEach(id => document.getElementById(id).textContent = '—');
   }
   const progressEl = document.getElementById('progress-card');
   if (progressSummary) {
@@ -1127,21 +1380,48 @@ function updateHome() {
   document.getElementById('last-session-wrap').innerHTML = sessions.length > 0
     ? renderSessionCard(sessions[0])
     : '<div class="card"><div style="font-size:13px;color:var(--text-tertiary);">Todavía no hay sesiones. Registrá tu primera.</div></div>';
-  renderChart(rondas.slice(0, 10).reverse());
+  renderHomeChart();
 }
 
-function renderChart(rondas) {
-  const canvas = document.getElementById('scoreChart');
+function setHomeChart(mode, btn) {
+  homeChartMode = mode;
+  document.getElementById('chart-score').classList.toggle('active', mode === 'score');
+  document.getElementById('chart-hi').classList.toggle('active', mode === 'hi');
+  renderHomeChart();
+}
+
+function renderHomeChart() {
+  const canvas = document.getElementById('homeChart');
   const msg    = document.getElementById('no-chart-msg');
-  if (scoreChartInstance) { scoreChartInstance.destroy(); scoreChartInstance = null; }
-  if (rondas.length < 2) { canvas.style.display = 'none'; msg.style.display = 'block'; return; }
+  if (homeChartInstance) { homeChartInstance.destroy(); homeChartInstance = null; }
+
+  const scoped = rangeFilter(sessions);
+  let labels, values, best, padLow = 3, padHigh = 3, step = 3, emptyMsg;
+
+  if (homeChartMode === 'hi') {
+    const hist = handicapIndexHistory(scoped);
+    emptyMsg = 'Registrá más tarjetas presentadas para ver la evolución del handicap.';
+    if (hist.length < 2) { canvas.style.display = 'none'; msg.textContent = emptyMsg; msg.style.display = 'block'; return; }
+    const series = hist.slice(-12);
+    labels = series.map(p => fmtShort(p.date));
+    values = series.map(p => p.index);
+    best   = Math.min(...values);
+    padLow = 1; padHigh = 1; step = 2;
+  } else {
+    const rondas = scoped.filter(s => s.type === 'ronda' && s.score).slice(0, 10).reverse();
+    emptyMsg = 'Registrá al menos 2 rondas para ver el gráfico.';
+    if (rondas.length < 2) { canvas.style.display = 'none'; msg.textContent = emptyMsg; msg.style.display = 'block'; return; }
+    labels = rondas.map(s => fmtShort(s.date));
+    values = rondas.map(s => s.score);
+    best   = Math.min(...values);
+  }
+
   canvas.style.display = 'block'; msg.style.display = 'none';
-  const scores = rondas.map(s => s.score);
-  const minS = Math.min(...scores), maxS = Math.max(...scores);
-  scoreChartInstance = new Chart(canvas, {
+  const minV = Math.min(...values), maxV = Math.max(...values);
+  homeChartInstance = new Chart(canvas, {
     type: 'line',
-    data: { labels: rondas.map(s => fmtShort(s.date)), datasets: [{ data: scores, borderColor: '#1a4d2e', backgroundColor: 'rgba(26,77,46,0.06)', tension: 0.35, pointRadius: 4, pointBackgroundColor: scores.map(s => s === minS ? '#c9a84c' : '#1a4d2e'), pointBorderColor: 'transparent', fill: true, borderWidth: 1.5 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { display: false }, border: { display: false } }, y: { min: minS-3, max: maxS+3, ticks: { color: '#aaa', font: { size: 10 }, stepSize: 3 }, grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false } } } }
+    data: { labels, datasets: [{ data: values, borderColor: '#1a4d2e', backgroundColor: 'rgba(26,77,46,0.06)', tension: 0.35, pointRadius: 4, pointBackgroundColor: values.map(v => v === best ? '#c9a84c' : '#1a4d2e'), pointBorderColor: 'transparent', fill: true, borderWidth: 1.5 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { display: false }, border: { display: false } }, y: { min: minV-padLow, max: maxV+padHigh, ticks: { color: '#aaa', font: { size: 10 }, stepSize: step }, grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false } } } }
   });
 }
 
@@ -1161,7 +1441,8 @@ function renderSessionCard(s, swipeable = false) {
               : s.duracion ? `<div style="font-size:12px;color:var(--text-tertiary);">${s.duracion} min</div>` : '';
   const foco  = s.foco ? `<div style="font-size:11px;color:var(--gold);margin-top:3px;">Foco: ${s.foco}</div>` : '';
   const loc   = s.courseName || s.place;
-  const card  = `<div class="session-card" data-id="${s.id}"><div class="sc-top"><div><span class="sc-tag ${tagClass[s.type]}">${typeLabel[s.type]}</span><div class="sc-place">${fmtDate(s.date)}${loc?' · '+loc:''}${s.mental?' · '+s.mental:''}</div>${foco}</div>${right}</div>${kpis}${s.notes?`<div class="sc-note">${s.notes.slice(0,120)}${s.notes.length>120?'…':''}</div>`:''}</div>`;
+  const pres  = (s.type === 'ronda' && s.presented) ? ' · <span style="color:var(--gold);">presentada</span>' : '';
+  const card  = `<div class="session-card" data-id="${s.id}"><div class="sc-top"><div><span class="sc-tag ${tagClass[s.type]}">${typeLabel[s.type]}</span><div class="sc-place">${fmtDate(s.date)}${loc?' · '+loc:''}${s.mental?' · '+s.mental:''}${pres}</div>${foco}</div>${right}</div>${kpis}${s.notes?`<div class="sc-note">${s.notes.slice(0,120)}${s.notes.length>120?'…':''}</div>`:''}</div>`;
   if (!swipeable) return `<div onclick="openSessionDetail(${s.id})">${card}</div>`;
   return `<div class="swipe-wrapper" data-id="${s.id}"><div class="swipe-delete-bg"><i class="ti ti-trash"></i></div>${card}</div>`;
 }
@@ -1284,9 +1565,11 @@ function renderDetailHoles(holes) {
   return `<div style="margin-top:8px;">${head}${rows}</div>`;
 }
 
+let detailId = null;
 function openSessionDetail(id) {
   const s = sessions.find(x => x.id === id);
   if (!s) return;
+  detailId = id;
   const typeLabel = { ronda: 'Ronda completa', practica: 'Práctica / range', clase: 'Clase con instructor' };
   document.getElementById('detail-title').textContent = typeLabel[s.type] || 'Sesión';
   let body = '';
@@ -1299,10 +1582,16 @@ function openSessionDetail(id) {
     const diffStr = diff == null ? '' : diff === 0 ? ' (E)' : diff > 0 ? ` (+${diff})` : ` (${diff})`;
     body += dtRow('Cancha', s.courseName ? esc(s.courseName) : (s.place ? esc(s.place) : ''));
     if (s.coursePar) body += dtRow('Par de cancha', s.coursePar);
+    body += dtRow('Tarjeta', s.presented ? 'Presentada (cuenta hcp)' : 'Práctica');
     body += dtRow('Score', s.score != null ? s.score + diffStr : '');
     body += dtRow('Putts', s.putts);
     if (s.fir != null) body += dtRow('Fairways', `${s.fir}/${s.firTotal || 14}`);
     if (s.gir != null) body += dtRow('GIR', `${s.gir}/${s.girTotal || 18}`);
+    if (s.rating != null && s.slope) body += dtRow('Rating / Slope', `${s.rating} / ${s.slope}`);
+    if (s.handicapIndex != null) body += dtRow('Handicap index', s.handicapIndex);
+    if (s.playingHandicap != null) body += dtRow('Handicap de juego', s.playingHandicap);
+    const diffVal = roundDifferential(s);
+    if (diffVal != null) body += dtRow('Diferencial', diffVal.toFixed(1));
     body += dtRow('Estado mental', s.mental);
     if (s.holes && s.holes.length) body += renderDetailHoles(s.holes);
   } else if (s.type === 'clase') {
@@ -1332,6 +1621,54 @@ function closeDetail(e) {
   if (!e || e.target === document.getElementById('detail-modal')) {
     document.getElementById('detail-modal').classList.remove('show');
   }
+}
+
+function editSession(id) {
+  const s = sessions.find(x => x.id === id);
+  if (!s) return;
+  closeDetail();
+  clearForm();          // reset all fields first
+  editingId = id;
+  setType(s.type, null);
+  document.getElementById('f-date').value   = s.date || '';
+  document.getElementById('f-place').value  = s.place || '';
+  document.getElementById('f-notes').value  = s.notes || '';
+  document.getElementById('f-mental').value = s.mental || '';
+
+  if (s.type === 'ronda') {
+    const existing = courses.find(c => c.id === s.courseId);
+    currentCourse = existing || {
+      id: s.courseId || ('tmp-' + s.id),
+      name: s.courseName || 'Cancha',
+      rating: s.rating ?? null,
+      slope: s.slope ?? null,
+      holes: (s.holes || []).map(h => ({ num: h.num, par: h.par, si: h.si ?? null }))
+    };
+    document.getElementById('f-course').value = existing ? String(existing.id) : '';
+    document.getElementById('course-edit-row').style.display = existing ? 'block' : 'none';
+    document.getElementById('course-builder').style.display = 'none';
+    roundHoles = (s.holes || []).map(h => ({
+      num: h.num, par: h.par,
+      si: h.si ?? (currentCourse.holes.find(ch => ch.num === h.num)?.si ?? null),
+      strokes: h.strokes ?? null, putts: h.putts ?? null,
+      gir: !!h.gir, fir: (h.fir === undefined ? (h.par === 3 ? null : false) : h.fir)
+    }));
+    document.getElementById('scorecard').style.display = 'block';
+    renderScorecard();
+    setPresented(!!s.presented);
+    document.getElementById('f-hindex').value = s.handicapIndex ?? '';
+    document.getElementById('f-phcp').value   = s.playingHandicap ?? '';
+  } else {
+    document.getElementById('f-foco').value = s.foco || '';
+    document.getElementById('f-dur').value  = s.duracion || '';
+    if (s.type === 'clase') {
+      document.getElementById('f-instructor').value = s.instructor || '';
+      document.getElementById('f-conceptos').value  = s.conceptos || '';
+    }
+  }
+  document.getElementById('log-title').textContent = 'Editar sesión';
+  document.getElementById('save-btn').textContent  = 'Guardar cambios';
+  navigate('log', document.querySelectorAll('.nav-item')[1]);
 }
 
 // ─── COACH ───────────────────────────────────────────────────────────────────
@@ -1483,6 +1820,8 @@ function fmtShort(d) { if (!d) return ''; return new Date(d+'T12:00:00').toLocal
 function toast(msg)  { const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
 
 document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+setType('ronda', null);   // hide Lugar for the default Ronda form, set toggles
+setPresented(false);
 load();
 </script>
 </body>
